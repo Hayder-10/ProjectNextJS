@@ -1,26 +1,140 @@
 @import "tailwindcss";
 
+/* Polices chargées par next/font dans app/layout.tsx */
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-barlow), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Contrôles natifs (listes déroulantes, calendrier, barres de défilement) en thème sombre */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: dark;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Fond « stade de nuit » : projecteurs verts et ambrés sur un fond très sombre.
+   Calque fixe séparé (plus léger pour le navigateur que background-attachment: fixed). */
+body {
+  background-color: #05080f;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 15% -10%, rgba(34, 197, 94, 0.18), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 95% 0%, rgba(251, 191, 36, 0.08), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 50% 110%, rgba(16, 185, 129, 0.1), transparent 60%);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ---------- Design system : classes réutilisées dans toute l'application ---------- */
+@layer components {
+  .card {
+    @apply rounded-2xl border border-white/10 bg-slate-900/80 p-4 shadow-xl shadow-black/20;
+  }
+  .card-hover {
+    @apply transition duration-300 hover:-translate-y-0.5 hover:border-green-500/40 hover:shadow-green-500/10;
+  }
+  .surface {
+    @apply rounded-2xl border border-white/10 bg-slate-900 shadow-2xl shadow-black/50;
+  }
+
+  .btn {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 py-2 font-semibold transition duration-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply bg-linear-to-r from-green-500 to-emerald-600 text-white shadow-lg shadow-green-500/25 hover:shadow-green-500/40 hover:brightness-110;
+  }
+  .btn-secondary {
+    @apply border border-white/10 bg-white/5 text-slate-100 hover:bg-white/10;
+  }
+  .btn-danger {
+    @apply bg-red-600/90 text-white hover:bg-red-600;
+  }
+  .btn-sm {
+    @apply min-h-9 px-3 py-1 text-sm;
+  }
+
+  .chip {
+    @apply whitespace-nowrap rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-300 transition hover:bg-white/10;
+  }
+  .chip-active {
+    @apply border-green-500 bg-green-500 text-slate-950 hover:bg-green-500;
+  }
+
+  .field {
+    @apply min-h-11 w-full rounded-xl border border-white/10 bg-slate-950/60 px-3 py-2 text-slate-100 placeholder:text-slate-500 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/30;
+  }
+
+  .page-title {
+    @apply font-display text-3xl font-bold uppercase tracking-wide text-white sm:text-4xl;
+  }
+  .section-title {
+    @apply font-display text-xl font-bold uppercase tracking-wide text-white;
+  }
+  .link {
+    @apply font-semibold text-green-400 transition hover:text-green-300;
+  }
+  .muted {
+    @apply text-slate-400;
+  }
+
+  /* Tableaux (admin, classements, stats) */
+  .tbl-wrap {
+    @apply overflow-x-auto rounded-2xl border border-white/10 bg-slate-900/80;
+  }
+  .tbl {
+    @apply w-full text-left text-sm;
+  }
+  .tbl thead {
+    @apply bg-white/5 text-xs uppercase tracking-wider text-slate-400;
+  }
+  .tbl th,
+  .tbl td {
+    @apply p-3;
+  }
+  .tbl tbody tr {
+    @apply border-t border-white/5 transition hover:bg-white/5;
+  }
+
+  /* Petites tuiles de chiffres (stats, valeur d'un XI) */
+  .stat {
+    @apply rounded-2xl border border-white/10 bg-linear-to-br from-white/10 to-white/0 p-3 text-center;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Apparition douce du contenu de chaque page */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-up {
+  animation: fade-up 0.5s ease-out both;
+}
+
+/* Lumière qui balaie le bandeau d'accueil */
+@keyframes sweep {
+  from {
+    transform: translateX(-100%) skewX(-20deg);
+  }
+  to {
+    transform: translateX(250%) skewX(-20deg);
+  }
+}
+.animate-sweep {
+  animation: sweep 6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up,
+  .animate-sweep {
+    animation: none;
+  }
 }
