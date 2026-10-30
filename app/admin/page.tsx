@@ -7,6 +7,7 @@ import { formatDate, formatTND } from '@/lib/utils';
 import AdminNav from '@/components/admin/AdminNav';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
+import Icon from '@/components/ui/Icon';
 
 export const metadata = { title: 'Administration' };
 
@@ -43,7 +44,7 @@ export default async function AdminDashboardPage() {
         <Card className="space-y-3 lg:col-span-2">
           <div className="flex items-center justify-between">
             <h2 className="section-title">Dernières commandes</h2>
-            <Link href="/admin/orders" className="link text-sm">Tout voir →</Link>
+            <Link href="/admin/orders" className="link text-sm">Tout voir <Icon name="arrow-right" /></Link>
           </div>
           {orders.length === 0 ? (
             <p className="text-sm text-slate-400">Aucune commande.</p>
@@ -68,7 +69,7 @@ export default async function AdminDashboardPage() {
           <Card className="space-y-3">
             <h2 className="section-title">Stock faible</h2>
             {lowStock.length === 0 ? (
-              <p className="text-sm text-slate-400">Tous les produits sont bien approvisionnés ✓</p>
+              <p className="text-sm text-slate-400"><Icon name="check" className="h-4 w-4 text-green-400" /> Tous les produits sont bien approvisionnés</p>
             ) : (
               <ul className="space-y-2 text-sm">
                 {lowStock.map((p) => (
@@ -94,9 +95,9 @@ export default async function AdminDashboardPage() {
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <Link href="/admin/products/new" className="btn btn-primary">+ Nouveau produit</Link>
-        <Link href="/admin/pitches/new" className="btn btn-secondary">+ Nouveau terrain</Link>
-        <Link href="/tournaments/new" className="btn btn-secondary">+ Nouveau tournoi</Link>
+        <Link href="/admin/products/new" className="btn btn-primary"><Icon name="plus" /> Nouveau produit</Link>
+        <Link href="/admin/pitches/new" className="btn btn-secondary"><Icon name="plus" /> Nouveau terrain</Link>
+        <Link href="/tournaments/new" className="btn btn-secondary"><Icon name="plus" /> Nouveau tournoi</Link>
       </div>
     </div>
   );

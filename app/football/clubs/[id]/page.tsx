@@ -7,6 +7,7 @@ import Avatar from '@/components/football/Avatar';
 import GameRow from '@/components/football/GameRow';
 import Card from '@/components/ui/Card';
 import EmptyState from '@/components/ui/EmptyState';
+import Icon from '@/components/ui/Icon';
 
 const POSITIONS = ['GK', 'DEF', 'MID', 'FWD'] as const;
 
@@ -21,14 +22,14 @@ export default async function ClubPage({ params }: { params: Promise<{ id: strin
     <div className="mx-auto max-w-3xl space-y-4">
       <FootballTabs active="competitions" />
       <Link href={`/football/competitions/${club.competitionTmId}`} className="link text-sm">
-        ← Championnat
+        <Icon name="arrow-left" /> Championnat
       </Link>
 
       <Card className="flex items-center gap-4">
         <Avatar src={club.logoUrl} name={club.name} size={64} rounded={false} />
         <div>
           <h1 className="page-title">{club.name}</h1>
-          {club.stadium && <p className="text-sm text-slate-400">🏟️ {club.stadium}</p>}
+          {club.stadium && <p className="text-sm text-slate-400"><Icon name="stadium" /> {club.stadium}</p>}
         </div>
       </Card>
 

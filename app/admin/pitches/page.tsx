@@ -7,6 +7,7 @@ import Badge from '@/components/ui/Badge';
 import SavedBanner from '@/components/ui/SavedBanner';
 import EmptyState from '@/components/ui/EmptyState';
 import ConfirmDeleteButton from '@/components/ui/ConfirmDeleteButton';
+import Icon from '@/components/ui/Icon';
 
 export const metadata = { title: 'Admin · Terrains' };
 
@@ -22,7 +23,7 @@ export default async function AdminPitchesPage({ searchParams }: { searchParams:
         <h1 className="page-title">Terrains</h1>
         <div className="flex gap-2">
           <Link href="/admin/bookings" className="btn btn-secondary">Voir les réservations</Link>
-          <Link href="/admin/pitches/new" className="btn btn-primary">+ Nouveau terrain</Link>
+          <Link href="/admin/pitches/new" className="btn btn-primary"><Icon name="plus" /> Nouveau terrain</Link>
         </div>
       </div>
       <SavedBanner saved={saved} />

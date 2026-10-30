@@ -6,6 +6,7 @@ import { formatTND } from '@/lib/utils';
 import ProductImage from '@/components/shop/ProductImage';
 import AddToCartButton from '@/components/shop/AddToCartButton';
 import Badge from '@/components/ui/Badge';
+import Icon from '@/components/ui/Icon';
 
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -15,7 +16,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   return (
     <div className="mx-auto max-w-3xl space-y-4">
       <Link href="/shop" className="link text-sm">
-        ← Boutique
+        <Icon name="arrow-left" /> Boutique
       </Link>
       <div className="overflow-hidden card p-0 md:grid md:grid-cols-2">
         <ProductImage product={product} className="h-64 md:h-full" />

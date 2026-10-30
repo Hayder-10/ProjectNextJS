@@ -3,6 +3,7 @@ import { ORDER_STATUS_LABELS } from '@/lib/validation/shop';
 import { formatDate, formatTND } from '@/lib/utils';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
+import Icon from '@/components/ui/Icon';
 
 const STATUS_COLORS = { pending: 'amber', confirmed: 'blue', shipped: 'green', cancelled: 'red' } as const;
 
@@ -32,7 +33,7 @@ export default function OrderCard({ order, children }: { order: OrderItem; child
         <span className="text-amber-400">{formatTND(order.total)}</span>
       </div>
       <p className="text-xs text-slate-400">
-        📍 {order.shippingAddress} · 📞 {order.phone} · Paiement à la livraison
+        <Icon name="pin" /> {order.shippingAddress} · <Icon name="phone" /> {order.phone} · Paiement à la livraison
       </p>
       {children}
     </Card>

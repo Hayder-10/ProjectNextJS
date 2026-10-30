@@ -9,6 +9,7 @@ import Badge from '@/components/ui/Badge';
 import ConfirmDeleteButton from '@/components/ui/ConfirmDeleteButton';
 import LikeButton from '@/components/forum/LikeButton';
 import ReplyForm from '@/components/forum/ReplyForm';
+import Icon from '@/components/ui/Icon';
 
 export default async function PostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -20,7 +21,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
   return (
     <div className="mx-auto max-w-3xl space-y-4">
       <Link href="/forum" className="link text-sm">
-        ← Forum
+        <Icon name="arrow-left" /> Forum
       </Link>
 
       <Card className="space-y-3">

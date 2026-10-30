@@ -5,6 +5,7 @@ import { formatDate, formatEUR, seasonLabel } from '@/lib/utils';
 import FootballTabs from '@/components/football/FootballTabs';
 import Avatar from '@/components/football/Avatar';
 import Card from '@/components/ui/Card';
+import Icon from '@/components/ui/Icon';
 
 function age(birthDate?: string) {
   if (!birthDate) return null;
@@ -30,7 +31,7 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
     <div className="mx-auto max-w-3xl space-y-4">
       <FootballTabs active="players" />
       <Link href="/football/players" className="link text-sm">
-        ← Joueurs
+        <Icon name="arrow-left" /> Joueurs
       </Link>
 
       <Card className="flex flex-col items-center gap-4 text-center sm:flex-row sm:text-left">
@@ -42,7 +43,7 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
             {player.subPosition && ` · ${player.subPosition}`}
           </p>
           <p className="text-sm text-slate-400">
-            {player.nationality && `🌍 ${player.nationality} · `}
+            {player.nationality && <><Icon name="globe" /> {player.nationality} · </>}
             {player.birthDate && `${age(player.birthDate)} ans (${formatDate(player.birthDate)})`}
           </p>
           {player.clubTmId && (
@@ -74,8 +75,8 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
               <th className="p-2">B</th>
               <th className="p-2">PD</th>
               <th className="p-2">Min</th>
-              <th className="p-2">🟨</th>
-              <th className="p-2">🟥</th>
+              <th className="p-2" aria-label="Cartons jaunes"><span className="inline-block h-3.5 w-2.5 rounded-sm bg-yellow-400" /></th>
+              <th className="p-2" aria-label="Cartons rouges"><span className="inline-block h-3.5 w-2.5 rounded-sm bg-red-500" /></th>
             </tr>
           </thead>
           <tbody>

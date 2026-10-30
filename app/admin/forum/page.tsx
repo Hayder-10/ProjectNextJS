@@ -8,6 +8,7 @@ import Badge from '@/components/ui/Badge';
 import Input from '@/components/ui/Input';
 import EmptyState from '@/components/ui/EmptyState';
 import ConfirmDeleteButton from '@/components/ui/ConfirmDeleteButton';
+import Icon from '@/components/ui/Icon';
 
 export const metadata = { title: 'Admin · Forum' };
 
@@ -39,8 +40,8 @@ export default async function AdminForumPage({ searchParams }: { searchParams: P
                 <th>Titre</th>
                 <th>Auteur</th>
                 <th>Catégorie</th>
-                <th>❤️</th>
-                <th>💬</th>
+                <th aria-label="J’aime"><Icon name="heart" /></th>
+                <th aria-label="Réponses"><Icon name="chat" /></th>
                 <th>Date</th>
                 <th>Actions</th>
               </tr>

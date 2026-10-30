@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import { useCart } from '@/context/CartContext';
+import Icon, { type IconName } from '@/components/ui/Icon';
 import { navLinks, isActive } from './nav-links';
 
 export default function Header() {
@@ -24,10 +25,11 @@ export default function Header() {
             <Link
               key={link.href}
               href={link.href}
-              className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
+              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition ${
                 isActive(pathname, link.href) ? 'bg-green-500/15 text-green-300' : 'text-slate-300 hover:bg-white/5 hover:text-white'
               }`}
             >
+              <Icon name={link.icon} />
               {link.label}
             </Link>
           ))}
@@ -35,7 +37,7 @@ export default function Header() {
 
         <div className="ml-auto flex items-center gap-2">
           <Link href="/shop/cart" className="relative flex h-11 w-11 items-center justify-center rounded-full transition hover:bg-white/10" aria-label="Panier">
-            <span className="text-xl">🛒</span>
+            <Icon name="cart" className="h-5 w-5" />
             {count > 0 && (
               <span className="absolute right-0 top-0 flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-400 px-1 text-xs font-bold text-slate-950 shadow-lg shadow-amber-400/40">
                 {count}
@@ -50,14 +52,15 @@ export default function Header() {
               </summary>
               <div className="surface absolute right-0 mt-2 w-60 overflow-hidden">
                 <p className="border-b border-white/10 px-4 py-3 text-sm font-semibold">{session.user.name}</p>
-                <MenuLink href="/profile">Profil</MenuLink>
-                <MenuLink href="/bookings">Mes réservations</MenuLink>
-                <MenuLink href="/shop/orders">Mes commandes</MenuLink>
-                {session.user.role === 'admin' && <MenuLink href="/admin">⚙️ Administration</MenuLink>}
+                <MenuLink href="/profile" icon="user">Profil</MenuLink>
+                <MenuLink href="/bookings" icon="calendar">Mes réservations</MenuLink>
+                <MenuLink href="/shop/orders" icon="package">Mes commandes</MenuLink>
+                {session.user.role === 'admin' && <MenuLink href="/admin" icon="shield">Administration</MenuLink>}
                 <button
                   onClick={() => signOut({ callbackUrl: '/' })}
-                  className="block w-full border-t border-white/10 px-4 py-3 text-left text-sm text-red-400 hover:bg-white/5"
+                  className="flex w-full items-center gap-3 border-t border-white/10 px-4 py-3 text-left text-sm text-red-400 hover:bg-white/5"
                 >
+                  <Icon name="logout" />
                   Déconnexion
                 </button>
               </div>
@@ -73,13 +76,14 @@ export default function Header() {
   );
 }
 
-function MenuLink({ href, children }: { href: string; children: React.ReactNode }) {
+function MenuLink({ href, icon, children }: { href: string; icon: IconName; children: React.ReactNode }) {
   return (
     <Link
       href={href}
       onClick={(e) => e.currentTarget.closest('details')?.removeAttribute('open')}
-      className="block px-4 py-3 text-sm text-slate-200 hover:bg-white/5"
+      className="flex items-center gap-3 px-4 py-3 text-sm text-slate-200 hover:bg-white/5"
     >
+      <Icon name={icon} className="h-4 w-4 text-slate-400" />
       {children}
     </Link>
   );

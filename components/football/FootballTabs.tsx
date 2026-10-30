@@ -8,9 +8,9 @@ export default function FootballTabs({ active }: { active: keyof typeof TABS }) 
     <Tabs
       active={TABS[active]}
       tabs={[
-        { href: TABS.competitions, label: 'Compétitions' },
-        { href: TABS.players, label: 'Joueurs' },
-        { href: TABS.myxi, label: 'Mon XI' },
+        { href: TABS.competitions, label: 'Compétitions', icon: 'trophy' },
+        { href: TABS.players, label: 'Joueurs', icon: 'users' },
+        { href: TABS.myxi, label: 'Mon XI', icon: 'shirt' },
       ]}
     />
   );

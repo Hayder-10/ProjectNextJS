@@ -1,15 +1,16 @@
 import Tabs from '@/components/ui/Tabs';
+import type { IconName } from '@/components/ui/Icon';
 
-export const ADMIN_SECTIONS = [
-  { href: '/admin', label: '📊 Tableau de bord' },
-  { href: '/admin/users', label: '👤 Utilisateurs' },
-  { href: '/admin/products', label: '🛒 Produits' },
-  { href: '/admin/orders', label: '📦 Commandes' },
-  { href: '/admin/pitches', label: '🥅 Terrains' },
-  { href: '/admin/bookings', label: '📅 Réservations' },
-  { href: '/admin/forum', label: '💬 Forum' },
-  { href: '/admin/tournaments', label: '🏆 Tournois' },
-  { href: '/admin/teams', label: '⚽ Mes XI' },
+export const ADMIN_SECTIONS: { href: string; label: string; icon: IconName }[] = [
+  { href: '/admin', label: 'Tableau de bord', icon: 'dashboard' },
+  { href: '/admin/users', label: 'Utilisateurs', icon: 'users' },
+  { href: '/admin/products', label: 'Produits', icon: 'cart' },
+  { href: '/admin/orders', label: 'Commandes', icon: 'package' },
+  { href: '/admin/pitches', label: 'Terrains', icon: 'goal' },
+  { href: '/admin/bookings', label: 'Réservations', icon: 'calendar' },
+  { href: '/admin/forum', label: 'Forum', icon: 'chat' },
+  { href: '/admin/tournaments', label: 'Tournois', icon: 'trophy' },
+  { href: '/admin/teams', label: 'Mes XI', icon: 'ball' },
 ];
 
 /** Navigation commune à toutes les pages d'administration */

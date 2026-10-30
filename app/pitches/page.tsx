@@ -6,6 +6,7 @@ import PlayTabs from '@/components/booking/PlayTabs';
 import PitchImage from '@/components/booking/PitchImage';
 import Select from '@/components/ui/Select';
 import EmptyState from '@/components/ui/EmptyState';
+import Icon from '@/components/ui/Icon';
 
 export const metadata = { title: 'Terrains' };
 
@@ -19,7 +20,7 @@ export default async function PitchesPage({ searchParams }: { searchParams: Prom
       <div className="flex items-center justify-between">
         <h1 className="page-title">Terrains</h1>
         <Link href="/bookings" className="link text-sm">
-          Mes réservations →
+          Mes réservations <Icon name="arrow-right" />
         </Link>
       </div>
 
@@ -48,7 +49,7 @@ export default async function PitchesPage({ searchParams }: { searchParams: Prom
               <PitchImage pitch={p} className="h-36" />
               <div className="space-y-1 p-4">
                 <h2 className="font-bold">{p.name}</h2>
-                <p className="text-sm text-slate-400">📍 {p.city}</p>
+                <p className="text-sm text-slate-400"><Icon name="pin" /> {p.city}</p>
                 <div className="flex justify-between text-sm">
                   <span>
                     {p.type} · {p.openHour}h–{p.closeHour}h

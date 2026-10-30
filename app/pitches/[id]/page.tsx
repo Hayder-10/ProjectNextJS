@@ -8,6 +8,7 @@ import PitchImage from '@/components/booking/PitchImage';
 import SlotPicker from '@/components/booking/SlotPicker';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
+import Icon from '@/components/ui/Icon';
 
 /** Les 15 jours réservables : aujourd'hui + 14 jours */
 function bookableDays() {
@@ -37,7 +38,7 @@ export default async function PitchPage({ params, searchParams }: Props) {
   return (
     <div className="mx-auto max-w-3xl space-y-4">
       <Link href="/pitches" className="link text-sm">
-        ← Terrains
+        <Icon name="arrow-left" /> Terrains
       </Link>
 
       <div className="overflow-hidden card p-0">
@@ -48,7 +49,7 @@ export default async function PitchPage({ params, searchParams }: Props) {
             {!pitch.isActive && <Badge color="red">Indisponible</Badge>}
           </div>
           <p className="text-slate-400">
-            📍 {pitch.address}, {pitch.city}
+            <Icon name="pin" /> {pitch.address}, {pitch.city}
           </p>
           <p>
             {pitch.type} · Ouvert de {pitch.openHour}h à {pitch.closeHour}h ·{' '}

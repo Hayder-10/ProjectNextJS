@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useCart } from '@/context/CartContext';
 import type { ProductItem } from '@/lib/queries/shop';
+import Icon from '@/components/ui/Icon';
 
 export default function AddToCartButton({ product }: { product: ProductItem }) {
   const { add, items } = useCart();
@@ -37,7 +38,7 @@ export default function AddToCartButton({ product }: { product: ProductItem }) {
         }}
         className="btn btn-primary flex-1"
       >
-        {added ? '✓ Ajouté au panier' : 'Ajouter au panier'}
+        {added ? <><Icon name="check" /> Ajouté au panier</> : <><Icon name="cart" /> Ajouter au panier</>}
       </button>
       {inCart > 0 && <p className="w-full text-sm text-slate-400">{inCart} déjà dans votre panier</p>}
     </div>

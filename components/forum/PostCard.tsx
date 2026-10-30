@@ -4,6 +4,7 @@ import { CATEGORY_LABELS } from '@/lib/validation/forum';
 import { formatDate } from '@/lib/utils';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
+import Icon from '@/components/ui/Icon';
 
 export default function PostCard({ post }: { post: PostListItem }) {
   return (
@@ -17,8 +18,8 @@ export default function PostCard({ post }: { post: PostListItem }) {
         <div className="mt-2 flex items-center justify-between text-sm text-slate-400">
           <span>par {post.author?.name ?? 'Compte supprimé'}</span>
           <span className="flex gap-3">
-            <span>❤️ {post.likesCount}</span>
-            <span>💬 {post.repliesCount}</span>
+            <span><Icon name="heart" /> {post.likesCount}</span>
+            <span><Icon name="chat" /> {post.repliesCount}</span>
           </span>
         </div>
       </Card>

@@ -10,6 +10,7 @@ import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import EmptyState from '@/components/ui/EmptyState';
 import ConfirmDeleteButton from '@/components/ui/ConfirmDeleteButton';
+import Icon from '@/components/ui/Icon';
 
 export const metadata = { title: 'Mon XI' };
 
@@ -29,20 +30,20 @@ export default async function MyXiPage() {
             <Avatar src={favoriteClub.logoUrl} name={favoriteClub.name} size={48} rounded={false} />
             <div>
               <p className="text-xs text-slate-300">Mon club favori</p>
-              <p className="font-display text-2xl font-bold uppercase">❤️ {favoriteClub.name}</p>
+              <p className="font-display text-2xl font-bold uppercase"><Icon name="heart" filled className="h-6 w-6 text-red-500" /> {favoriteClub.name}</p>
             </div>
           </Card>
         </Link>
       ) : (
         <Link href="/profile" className="card card-hover block text-sm text-slate-300">
-          ❤️ Choisissez votre club favori dans votre profil →
+          <Icon name="heart" /> Choisissez votre club favori dans votre profil <Icon name="arrow-right" />
         </Link>
       )}
 
       <div className="flex items-center justify-between">
         <h1 className="page-title">Mes XI</h1>
         <Link href="/my-xi/new" className="btn btn-primary">
-          + Nouveau XI
+          <Icon name="plus" /> Nouveau XI
         </Link>
       </div>
 
@@ -68,7 +69,7 @@ export default async function MyXiPage() {
                 </div>
                 <p className="line-clamp-2 text-sm text-slate-400">{team.players.map((p) => p.name).join(', ')}</p>
                 <p className="text-sm text-slate-400">
-                  ⚽ {goals} buts · 🅰️ {assists} passes
+                  <Icon name="ball" /> {goals} buts · <Icon name="target" /> {assists} passes
                 </p>
                 <div className="flex gap-2">
                   <Link href={`/my-xi/${team._id}/edit`} className="btn btn-secondary">

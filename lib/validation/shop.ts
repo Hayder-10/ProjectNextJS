@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { optionalUrl } from './common';
+import type { IconName } from '@/components/ui/Icon';
 
 export const PRODUCT_CATEGORIES = ['jerseys', 'boots', 'balls', 'training', 'accessories'] as const;
 
@@ -11,12 +12,12 @@ export const PRODUCT_CATEGORY_LABELS: Record<(typeof PRODUCT_CATEGORIES)[number]
   accessories: 'Accessoires',
 };
 
-export const PRODUCT_CATEGORY_ICONS: Record<(typeof PRODUCT_CATEGORIES)[number], string> = {
-  jerseys: '👕',
-  boots: '👟',
-  balls: '⚽',
-  training: '🏃',
-  accessories: '🧤',
+export const PRODUCT_CATEGORY_ICONS: Record<(typeof PRODUCT_CATEGORIES)[number], IconName> = {
+  jerseys: 'shirt',
+  boots: 'boot',
+  balls: 'ball',
+  training: 'activity',
+  accessories: 'bag',
 };
 
 export const ORDER_STATUSES = ['pending', 'confirmed', 'shipped', 'cancelled'] as const;

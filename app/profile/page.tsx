@@ -8,6 +8,7 @@ import Badge from '@/components/ui/Badge';
 import ProfileForm from '@/components/users/ProfileForm';
 import PasswordForm from '@/components/users/PasswordForm';
 import DeleteAccountButton from '@/components/users/DeleteAccountButton';
+import Icon from '@/components/ui/Icon';
 
 export const metadata = { title: 'Profil' };
 
@@ -22,11 +23,11 @@ export default async function ProfilePage() {
   ]);
 
   const links = [
-    { href: `/forum?author=${user._id}`, label: '💬 Mes publications' },
-    { href: '/my-xi', label: '⚽ Mes XI' },
-    { href: '/shop/orders', label: '📦 Mes commandes' },
-    { href: '/bookings', label: '🥅 Mes réservations' },
-    { href: '/tournaments?tab=mine', label: '🏆 Mes tournois' },
+    { href: `/forum?author=${user._id}`, label: 'Mes publications', icon: 'chat' as const },
+    { href: '/my-xi', label: 'Mes XI', icon: 'shirt' as const },
+    { href: '/shop/orders', label: 'Mes commandes', icon: 'package' as const },
+    { href: '/bookings', label: 'Mes réservations', icon: 'goal' as const },
+    { href: '/tournaments?tab=mine', label: 'Mes tournois', icon: 'trophy' as const },
   ];
 
   return (
@@ -45,10 +46,10 @@ export default async function ProfilePage() {
           <p className="text-sm text-slate-400">{user.email}</p>
           <div className="mt-1 flex flex-wrap gap-2">
             {user.role === 'admin' && <Badge color="amber">Admin</Badge>}
-            {user.city && <Badge>📍 {user.city}</Badge>}
+            {user.city && <Badge><Icon name="pin" className="h-3 w-3" /> {user.city}</Badge>}
             {favoriteClub && (
               <Link href={`/football/clubs/${favoriteClub.tmId}`}>
-                <Badge color="green">❤️ {favoriteClub.name}</Badge>
+                <Badge color="green"><Icon name="heart" filled className="h-3 w-3" /> {favoriteClub.name}</Badge>
               </Link>
             )}
           </div>
@@ -57,7 +58,8 @@ export default async function ProfilePage() {
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {links.map((l) => (
-          <Link key={l.href} href={l.href} className="card card-hover text-sm font-semibold">
+          <Link key={l.href} href={l.href} className="card card-hover flex items-center gap-3 text-sm font-semibold">
+            <Icon name={l.icon} className="h-5 w-5 text-green-400" />
             {l.label}
           </Link>
         ))}

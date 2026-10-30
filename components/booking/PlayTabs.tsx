@@ -6,8 +6,8 @@ export default function PlayTabs({ active }: { active: 'pitches' | 'tournaments'
     <Tabs
       active={active === 'pitches' ? '/pitches' : '/tournaments'}
       tabs={[
-        { href: '/pitches', label: 'Terrains' },
-        { href: '/tournaments', label: 'Tournois' },
+        { href: '/pitches', label: 'Terrains', icon: 'goal' },
+        { href: '/tournaments', label: 'Tournois', icon: 'trophy' },
       ]}
     />
   );

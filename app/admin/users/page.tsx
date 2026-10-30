@@ -56,7 +56,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                     ) : (
                       <div className="flex flex-wrap gap-2">
                         <ActionButton action="adminSetRole" args={[u._id, u.role === 'admin' ? 'user' : 'admin']}>
-                          {u.role === 'admin' ? '→ user' : '→ admin'}
+                          {u.role === 'admin' ? 'Rétrograder' : 'Promouvoir admin'}
                         </ActionButton>
                         <ConfirmDeleteButton
                           action="adminDeleteUser" args={[u._id]}

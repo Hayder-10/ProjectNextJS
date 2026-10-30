@@ -12,6 +12,7 @@ import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import EmptyState from '@/components/ui/EmptyState';
 import ConfirmDeleteButton from '@/components/ui/ConfirmDeleteButton';
+import Icon from '@/components/ui/Icon';
 
 export const metadata = { title: 'Admin · Produits' };
 
@@ -30,7 +31,7 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
       <AdminNav active="/admin/products" />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="page-title">Produits</h1>
-        <Link href="/admin/products/new" className="btn btn-primary">+ Nouveau produit</Link>
+        <Link href="/admin/products/new" className="btn btn-primary"><Icon name="plus" /> Nouveau produit</Link>
       </div>
       <SavedBanner saved={saved} />
 

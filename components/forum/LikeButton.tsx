@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useOptimistic, useTransition } from 'react';
 import { toggleLike } from '@/app/actions/forum';
+import Icon from '@/components/ui/Icon';
 
 type Props = { postId: string; liked: boolean; count: number; loggedIn: boolean };
 
@@ -17,7 +18,7 @@ export default function LikeButton({ postId, liked, count, loggedIn }: Props) {
   if (!loggedIn) {
     return (
       <Link href="/login" className="btn btn-secondary">
-        🤍 {count}
+        <Icon name="heart" /> {count}
       </Link>
     );
   }
@@ -34,7 +35,7 @@ export default function LikeButton({ postId, liked, count, loggedIn }: Props) {
       className={`btn ${state.liked ? 'border border-red-500/40 bg-red-500/15 text-red-300' : 'btn-secondary'}`}
       aria-pressed={state.liked}
     >
-      {state.liked ? '❤️' : '🤍'} {state.count}
+      <Icon name="heart" filled={state.liked} /> {state.count}
     </button>
   );
 }

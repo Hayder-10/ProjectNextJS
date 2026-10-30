@@ -3,6 +3,7 @@
 import { useActionState } from 'react';
 import { setMatchScore } from '@/app/actions/tournaments';
 import Button from '@/components/ui/Button';
+import Icon from '@/components/ui/Icon';
 
 type Props = {
   tournamentId: string;
@@ -22,7 +23,9 @@ export default function MatchScoreForm({ tournamentId, match }: Props) {
         <span>-</span>
         <input name="awayScore" type="number" min={0} max={99} defaultValue={match.awayScore} required className={inputClass} aria-label={`Buts ${match.awayTeam}`} />
         <span className="flex-1 truncate font-medium">{match.awayTeam}</span>
-        <Button className="px-3">✓</Button>
+        <Button className="px-3" aria-label="Enregistrer le score">
+          <Icon name="check" />
+        </Button>
       </div>
       {state && !state.ok && <p className="mt-1 text-center text-sm text-red-400">{state.error}</p>}
     </form>

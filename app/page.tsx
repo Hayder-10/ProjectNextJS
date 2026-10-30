@@ -11,6 +11,7 @@ import TournamentCard from '@/components/tournaments/TournamentCard';
 import ProductImage from '@/components/shop/ProductImage';
 import GameRow from '@/components/football/GameRow';
 import Card from '@/components/ui/Card';
+import Icon from '@/components/ui/Icon';
 
 // Données personnalisées (session) : la page est rendue à chaque requête
 export const dynamic = 'force-dynamic';
@@ -47,7 +48,7 @@ export default async function HomePage() {
 
         <div className="relative max-w-2xl space-y-5">
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-green-400">
-            {user ? `Salut, ${user.name} 👋` : 'La communauté foot tunisienne'}
+            {user ? `Salut, ${user.name}` : 'La communauté foot tunisienne'}
           </p>
           <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.95] tracking-tight text-white sm:text-7xl">
             Vis le football
@@ -57,8 +58,8 @@ export default async function HomePage() {
           <div className="flex flex-wrap gap-3">
             {user ? (
               <>
-                <Link href="/pitches" className="btn btn-primary">🥅 Réserver un terrain</Link>
-                <Link href="/my-xi/new" className="btn btn-secondary">⚽ Composer mon XI</Link>
+                <Link href="/pitches" className="btn btn-primary"><Icon name="goal" /> Réserver un terrain</Link>
+                <Link href="/my-xi/new" className="btn btn-secondary"><Icon name="shirt" /> Composer mon XI</Link>
               </>
             ) : (
               <>
@@ -132,7 +133,7 @@ function Section({ title, href, children }: { title: string; href: string; child
       <div className="flex items-end justify-between gap-4 border-b border-white/10 pb-2">
         <h2 className="section-title text-2xl">{title}</h2>
         <Link href={href} className="link shrink-0 text-sm">
-          Voir tout →
+          Voir tout <Icon name="arrow-right" />
         </Link>
       </div>
       {children}

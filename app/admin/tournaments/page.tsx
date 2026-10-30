@@ -7,6 +7,7 @@ import AdminNav from '@/components/admin/AdminNav';
 import Badge from '@/components/ui/Badge';
 import EmptyState from '@/components/ui/EmptyState';
 import ConfirmDeleteButton from '@/components/ui/ConfirmDeleteButton';
+import Icon from '@/components/ui/Icon';
 
 export const metadata = { title: 'Admin · Tournois' };
 
@@ -22,7 +23,7 @@ export default async function AdminTournamentsPage({ searchParams }: { searchPar
       <AdminNav active="/admin/tournaments" />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="page-title">Tournois</h1>
-        <Link href="/tournaments/new" className="btn btn-primary">+ Nouveau tournoi</Link>
+        <Link href="/tournaments/new" className="btn btn-primary"><Icon name="plus" /> Nouveau tournoi</Link>
       </div>
       <p className="text-sm text-slate-400">
         L&apos;admin a les mêmes droits que l&apos;organisateur : ouvrez un tournoi pour retirer une équipe, le démarrer, saisir les scores ou le clôturer.

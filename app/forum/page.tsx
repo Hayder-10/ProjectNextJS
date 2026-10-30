@@ -4,6 +4,7 @@ import { CATEGORIES, CATEGORY_LABELS } from '@/lib/validation/forum';
 import PostCard from '@/components/forum/PostCard';
 import EmptyState from '@/components/ui/EmptyState';
 import Pagination from '@/components/ui/Pagination';
+import Icon from '@/components/ui/Icon';
 
 export const metadata = { title: 'Forum' };
 
@@ -22,7 +23,7 @@ export default async function ForumPage({ searchParams }: { searchParams: Search
       <div className="flex items-center justify-between">
         <h1 className="page-title">Forum</h1>
         <Link href="/forum/new" className="btn btn-primary">
-          + Publier
+          <Icon name="plus" /> Publier
         </Link>
       </div>
 

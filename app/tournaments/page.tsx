@@ -4,6 +4,7 @@ import { listTournaments } from '@/lib/queries/tournaments';
 import PlayTabs from '@/components/booking/PlayTabs';
 import TournamentCard from '@/components/tournaments/TournamentCard';
 import EmptyState from '@/components/ui/EmptyState';
+import Icon from '@/components/ui/Icon';
 
 export const metadata = { title: 'Tournois' };
 
@@ -30,7 +31,7 @@ export default async function TournamentsPage({ searchParams }: { searchParams: 
       <div className="flex items-center justify-between">
         <h1 className="page-title">Tournois</h1>
         <Link href="/tournaments/new" className="btn btn-primary">
-          + Créer
+          <Icon name="plus" /> Créer
         </Link>
       </div>
 

@@ -11,6 +11,7 @@ import Textarea from '@/components/ui/Textarea';
 import Button from '@/components/ui/Button';
 import FormError from '@/components/ui/FormError';
 import EmptyState from '@/components/ui/EmptyState';
+import Icon from '@/components/ui/Icon';
 
 export default function CartView() {
   const { items, setQuantity, remove, clear, total } = useCart();
@@ -51,8 +52,8 @@ export default function CartView() {
                 +
               </button>
             </div>
-            <button type="button" onClick={() => remove(item.productId)} className="h-11 w-11 rounded-xl text-red-400 hover:bg-red-500/10" aria-label="Retirer">
-              🗑
+            <button type="button" onClick={() => remove(item.productId)} className="flex h-11 w-11 items-center justify-center rounded-xl text-red-400 hover:bg-red-500/10" aria-label="Retirer">
+              <Icon name="trash" className="h-5 w-5" />
             </button>
           </div>
         ))}
@@ -67,7 +68,7 @@ export default function CartView() {
         <form action={formAction} className="space-y-4">
           <Textarea label="Adresse de livraison" name="shippingAddress" rows={3} required minLength={5} />
           <Input label="Téléphone" name="phone" type="tel" placeholder="+216 20 123 456" required />
-          <p className="rounded-xl bg-amber-400/10 p-3 text-sm text-amber-300">💵 Paiement à la livraison</p>
+          <p className="rounded-xl bg-amber-400/10 p-3 text-sm text-amber-300"><Icon name="cash" /> Paiement à la livraison</p>
           <FormError state={state} />
           <Button className="w-full">Commander · {formatTND(total)}</Button>
         </form>

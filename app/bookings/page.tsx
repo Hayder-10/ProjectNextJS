@@ -8,6 +8,7 @@ import Badge from '@/components/ui/Badge';
 import EmptyState from '@/components/ui/EmptyState';
 import ConfirmDeleteButton from '@/components/ui/ConfirmDeleteButton';
 import MoveBookingForm from '@/components/booking/MoveBookingForm';
+import Icon from '@/components/ui/Icon';
 
 export const metadata = { title: 'Mes réservations' };
 
@@ -75,7 +76,7 @@ function BookingCard({ booking, children }: { booking: BookingItem; children?: R
         {booking.status === 'cancelled' ? <Badge color="red">Annulée</Badge> : <Badge color="green">Active</Badge>}
       </div>
       <p className="text-sm">
-        📅 {formatDate(booking.date)} · 🕐 {booking.startHour}h–{booking.startHour + 1}h ·{' '}
+        <Icon name="calendar" /> {formatDate(booking.date)} · <Icon name="clock" /> {booking.startHour}h–{booking.startHour + 1}h ·{' '}
         <span className="font-semibold text-amber-400">{formatTND(booking.price)}</span>
       </p>
       {children}

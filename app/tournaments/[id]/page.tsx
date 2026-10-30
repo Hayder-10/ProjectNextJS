@@ -13,6 +13,7 @@ import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import ActionButton from '@/components/ui/ActionButton';
 import ConfirmDeleteButton from '@/components/ui/ConfirmDeleteButton';
+import Icon from '@/components/ui/Icon';
 
 export default async function TournamentPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -34,22 +35,22 @@ export default async function TournamentPage({ params }: { params: Promise<{ id:
     <div className="mx-auto max-w-3xl space-y-4">
       <PlayTabs active="tournaments" />
       <Link href="/tournaments" className="link text-sm">
-        ← Tournois
+        <Icon name="arrow-left" /> Tournois
       </Link>
 
       <Card className="space-y-2">
         <div className="flex flex-wrap items-center gap-2">
-          <h1 className="page-title">🏆 {tournament.name}</h1>
+          <h1 className="page-title"><Icon name="trophy" className="h-7 w-7 text-amber-400" /> {tournament.name}</h1>
           <Badge color={isOpen ? 'green' : tournament.status === 'ongoing' ? 'amber' : 'slate'}>{TOURNAMENT_STATUS_LABELS[tournament.status]}</Badge>
         </div>
         <p className="text-slate-400">
-          📍 {tournament.pitch ? (
+          <Icon name="pin" /> {tournament.pitch ? (
             <Link href={`/pitches/${tournament.pitch._id}`} className="text-green-400 underline">
               {tournament.pitch.name}
             </Link>
           ) : null}
           {tournament.pitch ? ', ' : ''}
-          {tournament.city} · 📅 {formatDate(tournament.startDate)} · organisé par {tournament.organizer?.name ?? 'Compte supprimé'}
+          {tournament.city} · <Icon name="calendar" /> {formatDate(tournament.startDate)} · organisé par {tournament.organizer?.name ?? 'Compte supprimé'}
         </p>
         {tournament.description && <p className="whitespace-pre-line">{tournament.description}</p>}
 
@@ -65,7 +66,7 @@ export default async function TournamentPage({ params }: { params: Promise<{ id:
             )}
             {tournament.status === 'ongoing' && (
               <ActionButton action="finishTournament" args={[tournament._id]} variant="primary">
-                🏁 Clôturer le tournoi
+                <Icon name="flag" /> Clôturer le tournoi
               </ActionButton>
             )}
             <ConfirmDeleteButton action="deleteTournament" args={[tournament._id]} confirmMessage="Supprimer ce tournoi ?" />

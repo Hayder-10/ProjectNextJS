@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Icon from '@/components/ui/Icon';
 
 type Props = {
   page: number;
@@ -20,11 +21,11 @@ export default function Pagination({ page, totalPages, params, basePath }: Props
 
   return (
     <nav className="flex items-center justify-between gap-2">
-      {page > 1 ? <Link href={href(page - 1)} className="btn btn-secondary">← Précédent</Link> : <span />}
+      {page > 1 ? <Link href={href(page - 1)} className="btn btn-secondary"><Icon name="arrow-left" /> Précédent</Link> : <span />}
       <span className="text-sm text-slate-400">
         Page {page} / {totalPages}
       </span>
-      {page < totalPages ? <Link href={href(page + 1)} className="btn btn-secondary">Suivant →</Link> : <span />}
+      {page < totalPages ? <Link href={href(page + 1)} className="btn btn-secondary">Suivant <Icon name="arrow-right" /></Link> : <span />}
     </nav>
   );
 }

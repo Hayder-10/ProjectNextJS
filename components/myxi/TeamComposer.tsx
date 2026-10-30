@@ -10,6 +10,7 @@ import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import Button from '@/components/ui/Button';
 import FormError from '@/components/ui/FormError';
+import Icon from '@/components/ui/Icon';
 
 type Slots = Record<Position, (PickedPlayer | null)[]>;
 
@@ -92,7 +93,7 @@ export default function TeamComposer({ id, team }: Props) {
                   className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-dashed border-white/70 bg-white/10 text-2xl text-white hover:bg-white/25"
                   aria-label={`Choisir un ${LABELS[pos]}`}
                 >
-                  {player ? <Avatar src={player.imageUrl} name={player.name} size={52} /> : '+'}
+                  {player ? <Avatar src={player.imageUrl} name={player.name} size={52} /> : <Icon name="plus" className="h-6 w-6" />}
                 </button>
                 <span className="mt-1 line-clamp-1 text-center text-xs font-semibold text-white">{player ? player.name.split(' ').slice(-1)[0] : pos}</span>
                 {player && (
@@ -175,8 +176,8 @@ function PlayerPicker({ position, excludedIds, onPick, onClose }: PickerProps) {
       <div className="surface flex max-h-[80vh] w-full max-w-lg flex-col rounded-b-none sm:rounded-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between border-b border-white/10 p-4">
           <h2 className="font-bold">Choisir un {LABELS[position].toLowerCase()}</h2>
-          <button type="button" onClick={onClose} className="h-11 w-11 rounded-full hover:bg-white/5" aria-label="Fermer">
-            ✕
+          <button type="button" onClick={onClose} className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-white/5" aria-label="Fermer">
+            <Icon name="x" className="h-5 w-5" />
           </button>
         </div>
         <div className="p-4">

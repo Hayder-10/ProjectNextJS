@@ -11,6 +11,7 @@ import FootballTabs from '@/components/football/FootballTabs';
 import StandingsTable from '@/components/football/StandingsTable';
 import Avatar from '@/components/football/Avatar';
 import EmptyState from '@/components/ui/EmptyState';
+import Icon from '@/components/ui/Icon';
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ season?: string }> };
 
@@ -33,7 +34,7 @@ export default async function CompetitionPage({ params, searchParams }: Props) {
     <div className="mx-auto max-w-3xl space-y-4">
       <FootballTabs active="competitions" />
       <Link href="/football" className="link text-sm">
-        ← Compétitions
+        <Icon name="arrow-left" /> Compétitions
       </Link>
       <h1 className="page-title">{competition.name}</h1>
 
