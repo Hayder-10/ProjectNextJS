@@ -12,6 +12,8 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   const { id } = await params;
   const product = await getProduct(id);
   if (!product) notFound();
+  // Le produit d'une boutique suspendue n'est plus en vente
+  if (product.shop && product.shop.status !== 'approved') notFound();
 
   return (
     <div className="mx-auto max-w-3xl space-y-4">
@@ -25,7 +27,11 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
           <h1 className="page-title">{product.name}</h1>
           <p className="font-display text-3xl font-bold text-amber-400">{formatTND(product.price)}</p>
           <p className="whitespace-pre-line text-slate-400">{product.description}</p>
-          <p className="text-sm text-slate-400">{product.stock} en stock · Paiement à la livraison</p>
+          <p className="text-sm text-slate-400">{product.stock} en stock</p>
+          <p className="text-sm text-slate-400">
+            Vendu par{' '}
+            {product.shop ? <Link href={`/shop/boutiques/${product.shop._id}`} className="link">{product.shop.name}</Link> : 'FootHub'}
+          </p>
           <AddToCartButton product={product} />
         </div>
       </div>

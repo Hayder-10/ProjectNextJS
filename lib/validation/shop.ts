@@ -41,6 +41,7 @@ export const productSchema = z.object({
 export const orderSchema = z.object({
   shippingAddress: z.string().trim().min(5, 'Adresse de livraison trop courte').max(300, 'Adresse trop longue'),
   phone: z.string().trim().regex(/^\+?[0-9 ]{8,15}$/, 'Numéro de téléphone invalide'),
+  paymentMethod: z.enum(['cash', 'online'], 'Choisissez un mode de paiement'),
 });
 
 export const orderItemsSchema = z

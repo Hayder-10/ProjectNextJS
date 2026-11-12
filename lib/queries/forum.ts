@@ -13,6 +13,7 @@ export type PostListItem = {
   author: Author;
   likesCount: number;
   repliesCount: number;
+  lineupFormation?: string;
   createdAt: string;
 };
 
@@ -24,24 +25,26 @@ export type PostDetail = {
   author: Author;
   likes: string[];
   replies: { _id: string; author: Author; content: string; createdAt: string }[];
+  lineup?: { name: string; formation: string; players: { name: string; position: string; imageUrl?: string; clubName?: string }[] };
   createdAt: string;
   updatedAt: string;
 };
 
 export const POSTS_PER_PAGE = 10;
 
-export async function listPosts({ category, author, page }: { category?: string; author?: string; page: number }) {
+export async function listPosts({ category, author, lineups, page }: { category?: string; author?: string; lineups?: boolean; page: number }) {
   await connectDB();
   const filter: Record<string, unknown> = {};
   if (category) filter.category = category;
   if (author && isValidObjectId(author)) filter.author = author;
+  if (lineups) filter['lineup.formation'] = { $exists: true };
 
   const [posts, total] = await Promise.all([
     Post.find(filter)
       .sort({ createdAt: -1 })
       .skip((page - 1) * POSTS_PER_PAGE)
       .limit(POSTS_PER_PAGE)
-      .select('title category author likes replies createdAt')
+      .select('title category author likes replies createdAt lineup.formation')
       .populate('author', 'name avatarUrl')
       .lean(),
     Post.countDocuments(filter),
@@ -54,6 +57,7 @@ export async function listPosts({ category, author, page }: { category?: string;
     author: p.author,
     likesCount: p.likes.length,
     repliesCount: p.replies.length,
+    lineupFormation: p.lineup?.formation,
     createdAt: p.createdAt,
   }));
   return { posts: toPlain<PostListItem[]>(items), total };

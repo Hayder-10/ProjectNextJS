@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { placeOrder } from '@/app/actions/shop';
@@ -12,10 +12,14 @@ import Button from '@/components/ui/Button';
 import FormError from '@/components/ui/FormError';
 import EmptyState from '@/components/ui/EmptyState';
 import Icon from '@/components/ui/Icon';
+import PaymentMethodPicker from '@/components/payment/PaymentMethodPicker';
 
-export default function CartView() {
+export default function CartView({ onlinePaymentEnabled }: { onlinePaymentEnabled: boolean }) {
   const { items, setQuantity, remove, clear, total } = useCart();
   const router = useRouter();
+  // Champs contrôlés : React vide un formulaire après son action, la saisie doit survivre à une erreur
+  const [address, setAddress] = useState('');
+  const [phone, setPhone] = useState('');
 
   const [state, formAction] = useActionState(async (_prev: ActionResult, formData: FormData) => {
     // Seuls les ids et quantités sont envoyés : le serveur recharge les prix
@@ -24,8 +28,10 @@ export default function CartView() {
       formData,
     );
     if (result?.ok) {
+      // La commande existe : si le paiement est abandonné, il se reprend depuis « Mes commandes »
       clear();
-      router.push('/shop/orders');
+      if (result.redirectUrl) window.location.assign(result.redirectUrl);
+      else router.push('/shop/orders');
     }
     return result;
   }, null);
@@ -66,9 +72,9 @@ export default function CartView() {
       <Card>
         <h2 className="section-title mb-3">Livraison</h2>
         <form action={formAction} className="space-y-4">
-          <Textarea label="Adresse de livraison" name="shippingAddress" rows={3} required minLength={5} />
-          <Input label="Téléphone" name="phone" type="tel" placeholder="+216 20 123 456" required />
-          <p className="rounded-xl bg-amber-400/10 p-3 text-sm text-amber-300"><Icon name="cash" /> Paiement à la livraison</p>
+          <Textarea label="Adresse de livraison" name="shippingAddress" value={address} onChange={(e) => setAddress(e.target.value)} rows={3} required minLength={5} />
+          <Input label="Téléphone" name="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+216 20 123 456" required />
+          <PaymentMethodPicker onlineEnabled={onlinePaymentEnabled} cashLabel="À la livraison" cashHint="Vous réglez en espèces à la réception" />
           <FormError state={state} />
           <Button className="w-full">Commander · {formatTND(total)}</Button>
         </form>

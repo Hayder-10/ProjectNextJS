@@ -26,6 +26,8 @@ export type BookingItem = {
   startHour: number;
   status: 'active' | 'cancelled';
   price: number;
+  paymentMethod?: 'cash' | 'online';
+  paymentStatus?: 'unpaid' | 'paid' | 'refunded';
   createdAt: string;
 };
 

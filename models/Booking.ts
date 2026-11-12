@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
+import { paymentFields } from './payment-fields';
 
 const bookingSchema = new Schema(
   {
@@ -8,6 +9,7 @@ const bookingSchema = new Schema(
     startHour: { type: Number, required: true }, // créneau startHour → startHour + 1
     status: { type: String, enum: ['active', 'cancelled'], default: 'active' },
     price: { type: Number, required: true }, // copié de pitch.pricePerHour
+    ...paymentFields,
   },
   { timestamps: true },
 );

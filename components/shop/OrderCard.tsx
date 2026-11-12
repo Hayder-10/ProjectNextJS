@@ -4,6 +4,7 @@ import { formatDate, formatTND } from '@/lib/utils';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import Icon from '@/components/ui/Icon';
+import PaymentBadge from '@/components/payment/PaymentBadge';
 
 const STATUS_COLORS = { pending: 'amber', confirmed: 'blue', shipped: 'green', cancelled: 'red' } as const;
 
@@ -13,6 +14,7 @@ export default function OrderCard({ order, children }: { order: OrderItem; child
       <div className="flex items-center justify-between gap-2">
         <span className="text-sm text-slate-400">
           Commande du {formatDate(order.createdAt)}
+          {order.shopName && ` · ${order.shopName}`}
           {/* acheteur chargé seulement dans la vue admin */}
           {typeof order.buyer === 'object' && order.buyer && ` · ${order.buyer.name} (${order.buyer.email})`}
         </span>
@@ -33,8 +35,9 @@ export default function OrderCard({ order, children }: { order: OrderItem; child
         <span className="text-amber-400">{formatTND(order.total)}</span>
       </div>
       <p className="text-xs text-slate-400">
-        <Icon name="pin" /> {order.shippingAddress} · <Icon name="phone" /> {order.phone} · Paiement à la livraison
+        <Icon name="pin" /> {order.shippingAddress} · <Icon name="phone" /> {order.phone}
       </p>
+      <PaymentBadge method={order.paymentMethod} status={order.paymentStatus} cashLabel="À la livraison" cancelled={order.status === 'cancelled'} />
       {children}
     </Card>
   );

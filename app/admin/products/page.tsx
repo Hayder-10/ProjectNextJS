@@ -24,7 +24,7 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
   // Ancienne adresse de la liste des commandes (section 7.4 de la spécification)
   if (tab === 'orders') redirect('/admin/orders');
 
-  const products = await listProducts({ q: q?.trim(), category });
+  const products = await listProducts({ q: q?.trim(), category, includeHidden: true });
 
   return (
     <div className="space-y-6">
@@ -55,6 +55,7 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
               <tr>
                 <th>Produit</th>
                 <th>Catégorie</th>
+                <th>Vendeur</th>
                 <th>Prix</th>
                 <th>Stock</th>
                 <th>Actions</th>
@@ -72,6 +73,7 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
                     </div>
                   </td>
                   <td>{PRODUCT_CATEGORY_LABELS[p.category]}</td>
+                  <td>{p.shop?.name ?? 'FootHub'}</td>
                   <td className="whitespace-nowrap font-semibold text-amber-400">{formatTND(p.price)}</td>
                   <td>
                     <Badge color={p.stock === 0 ? 'red' : p.stock <= 3 ? 'amber' : 'green'}>{p.stock === 0 ? 'Rupture' : p.stock}</Badge>

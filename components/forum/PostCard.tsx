@@ -12,6 +12,7 @@ export default function PostCard({ post }: { post: PostListItem }) {
       <Card className="card-hover">
         <div className="mb-1 flex items-center gap-2">
           <Badge color="green">{CATEGORY_LABELS[post.category]}</Badge>
+          {post.lineupFormation && <Badge color="amber"><Icon name="shirt" className="h-3 w-3" /> {post.lineupFormation}</Badge>}
           <span className="text-xs text-slate-400">{formatDate(post.createdAt)}</span>
         </div>
         <h2 className="text-lg font-bold text-white">{post.title}</h2>

@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getCompetitionNames, getPlayerByTmId, POSITION_LABELS } from '@/lib/queries/football';
 import { formatDate, formatEUR, seasonLabel } from '@/lib/utils';
-import FootballTabs from '@/components/football/FootballTabs';
 import Avatar from '@/components/football/Avatar';
 import Card from '@/components/ui/Card';
 import Icon from '@/components/ui/Icon';
@@ -29,7 +28,6 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
 
   return (
     <div className="mx-auto max-w-3xl space-y-4">
-      <FootballTabs active="players" />
       <Link href="/football/players" className="link text-sm">
         <Icon name="arrow-left" /> Joueurs
       </Link>

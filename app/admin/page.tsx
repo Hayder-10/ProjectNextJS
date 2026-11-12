@@ -18,6 +18,7 @@ export default async function AdminDashboardPage() {
   const tiles = [
     { label: "Chiffre d'affaires", value: formatTND(stats.revenue), href: '/admin/orders', accent: true },
     { label: 'Commandes en attente', value: stats.pendingOrders, href: '/admin/orders' },
+    { label: 'Boutiques à valider', value: stats.pendingShops, href: '/admin/shops?status=pending' },
     { label: 'Réservations à venir', value: stats.upcomingBookings, href: '/admin/bookings' },
     { label: 'Utilisateurs', value: stats.users, href: '/admin/users' },
     { label: 'Publications', value: stats.posts, href: '/admin/forum' },

@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { listCompetitions } from '@/lib/queries/football';
-import FootballTabs from '@/components/football/FootballTabs';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import EmptyState from '@/components/ui/EmptyState';
@@ -16,7 +15,6 @@ export default async function FootballPage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-4">
-      <FootballTabs active="competitions" />
       <h1 className="page-title">Compétitions</h1>
 
       {competitions.length === 0 ? (

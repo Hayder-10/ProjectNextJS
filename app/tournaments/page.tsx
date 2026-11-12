@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { getCurrentUser } from '@/lib/auth';
 import { listTournaments } from '@/lib/queries/tournaments';
-import PlayTabs from '@/components/booking/PlayTabs';
 import TournamentCard from '@/components/tournaments/TournamentCard';
 import EmptyState from '@/components/ui/EmptyState';
 import Icon from '@/components/ui/Icon';
@@ -27,7 +26,6 @@ export default async function TournamentsPage({ searchParams }: { searchParams: 
 
   return (
     <div className="mx-auto max-w-3xl space-y-4">
-      <PlayTabs active="tournaments" />
       <div className="flex items-center justify-between">
         <h1 className="page-title">Tournois</h1>
         <Link href="/tournaments/new" className="btn btn-primary">

@@ -4,7 +4,6 @@ import { listMyTeams } from '@/lib/queries/myxi';
 import { getUserById } from '@/lib/queries/users';
 import { getClubById } from '@/lib/queries/football';
 import { formatEUR } from '@/lib/utils';
-import FootballTabs from '@/components/football/FootballTabs';
 import Avatar from '@/components/football/Avatar';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
@@ -21,8 +20,6 @@ export default async function MyXiPage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-4">
-      <FootballTabs active="myxi" />
-
       {/* Club favori en haut */}
       {favoriteClub ? (
         <Link href={`/football/clubs/${favoriteClub.tmId}`}>
@@ -71,7 +68,10 @@ export default async function MyXiPage() {
                 <p className="text-sm text-slate-400">
                   <Icon name="ball" /> {goals} buts · <Icon name="target" /> {assists} passes
                 </p>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
+                  <Link href={`/forum/new?team=${team._id}`} className="btn btn-primary">
+                    <Icon name="chat" /> Publier au forum
+                  </Link>
                   <Link href={`/my-xi/${team._id}/edit`} className="btn btn-secondary">
                     Modifier
                   </Link>

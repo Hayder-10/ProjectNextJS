@@ -6,6 +6,7 @@ import { connectDB } from '@/lib/db';
 import { requireAdmin, requireUser } from '@/lib/auth';
 import { postSchema, replySchema } from '@/lib/validation/forum';
 import { firstError, objectId } from '@/lib/validation/common';
+import { getMyTeam } from '@/lib/queries/myxi';
 import type { ActionResult } from '@/lib/utils';
 import Post from '@/models/Post';
 
@@ -15,7 +16,21 @@ export async function createPost(_prev: ActionResult, formData: FormData): Promi
   if (!parsed.success) return { ok: false, error: firstError(parsed.error) };
 
   await connectDB();
-  const post = await Post.create({ ...parsed.data, author: user.id });
+
+  // Publication d'une formation : on copie le XI de l'utilisateur dans la publication
+  const teamId = formData.get('teamId');
+  let lineup;
+  if (teamId) {
+    const team = await getMyTeam(String(teamId));
+    if (!team || team.owner !== user.id) return { ok: false, error: 'XI introuvable' };
+    lineup = {
+      name: team.name,
+      formation: team.formation,
+      players: team.players.map(({ name, position, imageUrl, clubName }) => ({ name, position, imageUrl, clubName })),
+    };
+  }
+
+  const post = await Post.create({ ...parsed.data, author: user.id, lineup });
   revalidatePath('/forum');
   revalidatePath('/');
   redirect(`/forum/${post._id}`);

@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getClubByTmId, getClubLastGames, getSquad, POSITION_LABELS } from '@/lib/queries/football';
 import { formatEUR } from '@/lib/utils';
-import FootballTabs from '@/components/football/FootballTabs';
 import Avatar from '@/components/football/Avatar';
 import GameRow from '@/components/football/GameRow';
 import Card from '@/components/ui/Card';
@@ -20,7 +19,6 @@ export default async function ClubPage({ params }: { params: Promise<{ id: strin
 
   return (
     <div className="mx-auto max-w-3xl space-y-4">
-      <FootballTabs active="competitions" />
       <Link href={`/football/competitions/${club.competitionTmId}`} className="link text-sm">
         <Icon name="arrow-left" /> Championnat
       </Link>

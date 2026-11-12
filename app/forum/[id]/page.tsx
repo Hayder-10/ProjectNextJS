@@ -10,6 +10,7 @@ import ConfirmDeleteButton from '@/components/ui/ConfirmDeleteButton';
 import LikeButton from '@/components/forum/LikeButton';
 import ReplyForm from '@/components/forum/ReplyForm';
 import Icon from '@/components/ui/Icon';
+import LineupPitch from '@/components/myxi/LineupPitch';
 
 export default async function PostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -32,6 +33,14 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
           </span>
         </div>
         <h1 className="page-title">{post.title}</h1>
+        {post.lineup && (
+          <div className="space-y-2">
+            <p className="font-semibold">
+              {post.lineup.name} <Badge color="amber">{post.lineup.formation}</Badge>
+            </p>
+            <LineupPitch formation={post.lineup.formation} players={post.lineup.players} />
+          </div>
+        )}
         <p className="whitespace-pre-line text-slate-200">{post.content}</p>
 
         <div className="flex flex-wrap items-center gap-2 border-t border-white/10 pt-3">

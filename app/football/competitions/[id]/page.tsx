@@ -7,7 +7,6 @@ import {
   listClubsOfCompetition,
 } from '@/lib/queries/football';
 import { seasonLabel } from '@/lib/utils';
-import FootballTabs from '@/components/football/FootballTabs';
 import StandingsTable from '@/components/football/StandingsTable';
 import Avatar from '@/components/football/Avatar';
 import EmptyState from '@/components/ui/EmptyState';
@@ -32,7 +31,6 @@ export default async function CompetitionPage({ params, searchParams }: Props) {
 
   return (
     <div className="mx-auto max-w-3xl space-y-4">
-      <FootballTabs active="competitions" />
       <Link href="/football" className="link text-sm">
         <Icon name="arrow-left" /> Compétitions
       </Link>

@@ -2,7 +2,8 @@
 
 import { useActionState, useState } from 'react';
 import { createBooking } from '@/app/actions/booking';
-import { formatTND } from '@/lib/utils';
+import { formatTND, type ActionResult } from '@/lib/utils';
+import PaymentMethodPicker from '@/components/payment/PaymentMethodPicker';
 import Button from '@/components/ui/Button';
 import FormError from '@/components/ui/FormError';
 
@@ -15,11 +16,16 @@ type Props = {
   /** Les heures <= pastLimit sont passées (aujourd'hui) */
   pastLimit: number;
   price: number;
+  onlinePaymentEnabled: boolean;
 };
 
 /** Un bouton par heure ; les créneaux pris ou passés sont grisés */
-export default function SlotPicker({ pitchId, date, openHour, closeHour, taken, pastLimit, price }: Props) {
-  const [state, formAction] = useActionState(createBooking.bind(null, pitchId), null);
+export default function SlotPicker({ pitchId, date, openHour, closeHour, taken, pastLimit, price, onlinePaymentEnabled }: Props) {
+  const [state, formAction] = useActionState(async (prev: ActionResult, formData: FormData) => {
+    const result = await createBooking(pitchId, prev, formData);
+    if (result?.ok && result.redirectUrl) window.location.assign(result.redirectUrl);
+    return result;
+  }, null);
   const [selected, setSelected] = useState<number | null>(null);
 
   const hours = Array.from({ length: closeHour - openHour }, (_, i) => openHour + i);
@@ -53,6 +59,8 @@ export default function SlotPicker({ pitchId, date, openHour, closeHour, taken, 
         })}
       </div>
       <p className="text-xs text-slate-400">Les créneaux grisés sont déjà réservés ou passés.</p>
+
+      <PaymentMethodPicker onlineEnabled={onlinePaymentEnabled} cashLabel="Sur place" cashHint="Vous réglez au terrain, le jour du match" />
 
       <FormError state={state} />
       <Button className="w-full" disabled={selected === null || taken.includes(selected)}>

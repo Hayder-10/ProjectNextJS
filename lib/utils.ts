@@ -1,5 +1,5 @@
 /** Résultat renvoyé par les Server Actions utilisées avec useActionState */
-export type ActionResult = { ok: true; message?: string } | { ok: false; error: string } | null;
+export type ActionResult = { ok: true; message?: string; redirectUrl?: string } | { ok: false; error: string } | null;
 
 /** Convertit un document .lean() en objet simple (_id, ObjectId et dates deviennent des chaînes) */
 export function toPlain<T>(doc: unknown): T {

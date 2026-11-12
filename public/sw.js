@@ -24,7 +24,7 @@ self.addEventListener('fetch', (event) => {
 
   // Non géré : requêtes non-GET (Server Actions en POST) et authentification
   if (request.method !== 'GET') return;
-  if (url.pathname.startsWith('/api/auth')) return;
+  if (url.pathname.startsWith('/api/auth') || url.pathname.startsWith('/payment')) return;
 
   // Navigations : Network First, puis la page en cache, sinon /offline
   if (request.mode === 'navigate') {

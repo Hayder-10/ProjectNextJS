@@ -24,6 +24,45 @@ NEXTAUTH_SECRET=<chaîne aléatoire>      # ex. : node -e "console.log(require('
 NEXTAUTH_URL=http://localhost:3000
 ```
 
+### Paiement Stripe et e-mails (facultatifs)
+
+Sans ces variables, l'application fonctionne avec le paiement sur place ou à la livraison, et les e-mails sont notés dans la console.
+
+- **Stripe** : créer un compte, puis copier la clé secrète de test (`sk_test_...`) depuis *Developers → API keys*.
+  En local, cette clé suffit : la page de retour confirme le paiement et les paiements abandonnés sont libérés après 36 minutes.
+  Le webhook reste obligatoire en production, et utile en local pour tester les expirations (Stripe CLI).
+- **E-mail** : les identifiants SMTP de n'importe quel fournisseur (Gmail avec un mot de passe d'application, Brevo, Mailtrap pour les tests…).
+
+Vérifier ensuite la configuration, sans rien débiter ni envoyer :
+
+```bash
+npm run check:services
+```
+
+```
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...         # donné par : stripe listen --forward-to localhost:3000/api/stripe/webhook
+STRIPE_CURRENCY=tnd                     # autre devise si le compte n'accepte pas le TND (ex. eur)
+STRIPE_RATE_FROM_TND=1                  # taux de conversion depuis le TND (ex. 0.30)
+
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=...
+SMTP_PASS=...
+EMAIL_FROM=FootHub <no-reply@example.com>
+```
+
+En production, déclarer le webhook `/api/stripe/webhook` dans Stripe avec les événements
+`checkout.session.completed`, `checkout.session.async_payment_succeeded` et `checkout.session.expired`.
+
+### Boutiques des vendeurs
+
+Un utilisateur demande l'ouverture de sa boutique depuis `/seller`, et un admin la valide dans `/admin/shops`.
+Un panier à plusieurs boutiques crée une commande par boutique, pour un seul paiement Stripe.
+Tous les paiements en ligne arrivent sur le compte Stripe de FootHub : les reversements aux vendeurs se font à la main.
+Quand c'est fait, l'admin clique sur « Marquer comme réglé ».
+La commission se règle avec `PLATFORM_COMMISSION_PERCENT` (10 par défaut) : chaque commande garde le taux en vigueur à sa création.
+
 ### Données football (une seule fois)
 
 1. Télécharger le jeu de données **transfermarkt-datasets** :

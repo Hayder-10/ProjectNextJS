@@ -9,7 +9,9 @@ import { deleteProduct, cancelOrder } from '@/app/actions/shop';
 import { deletePitch, cancelBooking } from '@/app/actions/booking';
 import { deletePost, deleteReply, adminDeletePost } from '@/app/actions/forum';
 import { deleteMyTeam, adminDeleteMyTeam } from '@/app/actions/myxi';
-import { deleteTournament, withdrawTeam, startTournament, finishTournament, adminDeleteTournament } from '@/app/actions/tournaments';
+import { deleteTournament, withdrawTeam, startTournament, advanceTournament, finishTournament, adminDeleteTournament } from '@/app/actions/tournaments';
+import { deleteTeam, adminDeleteTeam } from '@/app/actions/teams';
+import { approveShop, deleteSellerProduct, settleShop, suspendShop } from '@/app/actions/sellers';
 import { adminSetRole, adminDeleteUser } from '@/app/actions/users';
 import type { ActionResult } from '@/lib/utils';
 
@@ -26,7 +28,14 @@ export const CLIENT_ACTIONS = {
   deleteTournament,
   withdrawTeam,
   startTournament,
+  advanceTournament,
   finishTournament,
+  deleteTeam,
+  adminDeleteTeam,
+  approveShop,
+  deleteSellerProduct,
+  settleShop,
+  suspendShop,
   adminDeleteTournament,
   adminSetRole,
   adminDeleteUser,

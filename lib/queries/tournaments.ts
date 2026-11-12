@@ -17,8 +17,19 @@ export type TournamentItem = {
   startDate: string;
   maxTeams: 4 | 8 | 16;
   status: 'open' | 'ongoing' | 'finished';
-  teams: { _id: string; name: string; captain: UserRef }[];
-  matches: { _id: string; homeTeam: string; awayTeam: string; homeScore?: number; awayScore?: number; round: string }[];
+  champion?: string;
+  teams: { _id: string; name: string; captain: UserRef; players?: string[] }[];
+  matches: {
+    _id: string;
+    homeTeam: string;
+    awayTeam: string;
+    homeScore?: number;
+    awayScore?: number;
+    homeYellow?: number;
+    awayYellow?: number;
+    round: string;
+    stage?: 'group' | 'knockout';
+  }[];
   createdAt: string;
 };
 

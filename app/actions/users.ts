@@ -10,6 +10,8 @@ import { firstError, objectId } from '@/lib/validation/common';
 import type { ActionResult } from '@/lib/utils';
 import User from '@/models/User';
 import MyTeam from '@/models/MyTeam';
+import Team from '@/models/Team';
+import Shop from '@/models/Shop';
 
 export async function registerUser(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
   const parsed = registerSchema.safeParse(Object.fromEntries(formData));
@@ -68,6 +70,9 @@ export async function deleteMyAccount(): Promise<ActionResult> {
   await connectDB();
   await User.findByIdAndDelete(sessionUser.id);
   await MyTeam.deleteMany({ owner: sessionUser.id });
+  await Team.deleteMany({ owner: sessionUser.id });
+  // La boutique est gardée pour la comptabilité, mais ne vend plus rien
+  await Shop.updateOne({ owner: sessionUser.id }, { status: 'suspended' });
   return { ok: true };
 }
 
@@ -92,6 +97,8 @@ export async function adminDeleteUser(userId: string): Promise<ActionResult> {
   await connectDB();
   await User.findByIdAndDelete(userId);
   await MyTeam.deleteMany({ owner: userId });
+  await Team.deleteMany({ owner: userId });
+  await Shop.updateOne({ owner: userId }, { status: 'suspended' });
   revalidatePath('/admin/users');
   return { ok: true };
 }

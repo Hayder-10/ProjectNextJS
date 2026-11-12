@@ -16,7 +16,7 @@ export default function BottomNav() {
           const active = isActive(pathname, link.href);
           return (
             <li key={link.href}>
-              <Link href={link.href} className={`flex h-16 flex-col items-center justify-center gap-0.5 text-[11px] font-semibold transition ${active ? 'text-green-400' : 'text-slate-400'}`}>
+              <Link href={link.href} aria-current={active ? 'page' : undefined} className={`flex h-16 flex-col items-center justify-center gap-0.5 text-[11px] font-semibold transition ${active ? 'text-green-400' : 'text-slate-400'}`}>
                 <Icon name={link.icon} className={`h-6 w-6 transition ${active ? 'scale-110 drop-shadow-[0_0_8px_rgba(34,197,94,0.7)]' : ''}`} />
                 {link.label}
               </Link>

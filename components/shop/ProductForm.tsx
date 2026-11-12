@@ -2,6 +2,7 @@
 
 import { useActionState } from 'react';
 import { createProduct, updateProduct } from '@/app/actions/shop';
+import { createSellerProduct, updateSellerProduct } from '@/app/actions/sellers';
 import type { ProductItem } from '@/lib/queries/shop';
 import { PRODUCT_CATEGORIES, PRODUCT_CATEGORY_LABELS } from '@/lib/validation/shop';
 import Input from '@/components/ui/Input';
@@ -14,10 +15,14 @@ type Props = {
   /** En modification : identifiant de l'élément (sinon : création) */
   id?: string;
   product?: ProductItem;
+  /** Formulaire d'un vendeur : le produit appartient à sa boutique */
+  seller?: boolean;
 };
 
-export default function ProductForm({ id, product }: Props) {
-  const [state, formAction] = useActionState(id ? updateProduct.bind(null, id) : createProduct, null);
+export default function ProductForm({ id, product, seller = false }: Props) {
+  const create = seller ? createSellerProduct : createProduct;
+  const update = seller ? updateSellerProduct : updateProduct;
+  const [state, formAction] = useActionState(id ? update.bind(null, id) : create, null);
 
   return (
     <form action={formAction} className="space-y-4">

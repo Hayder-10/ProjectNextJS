@@ -8,12 +8,12 @@ import Icon from '@/components/ui/Icon';
 
 export const metadata = { title: 'Forum' };
 
-type SearchParams = Promise<{ category?: string; author?: string; page?: string }>;
+type SearchParams = Promise<{ category?: string; author?: string; lineups?: string; page?: string }>;
 
 export default async function ForumPage({ searchParams }: { searchParams: SearchParams }) {
-  const { category, author, page: pageParam } = await searchParams;
+  const { category, author, lineups, page: pageParam } = await searchParams;
   const page = Math.max(1, Number(pageParam) || 1);
-  const { posts, total } = await listPosts({ category, author, page });
+  const { posts, total } = await listPosts({ category, author, lineups: lineups === '1', page });
 
   const tabClass = (active: boolean) =>
     `chip ${active ? 'chip-active' : ''}`;
@@ -28,7 +28,7 @@ export default async function ForumPage({ searchParams }: { searchParams: Search
       </div>
 
       <div className="flex gap-2 overflow-x-auto pb-1">
-        <Link href="/forum" className={tabClass(!category)}>
+        <Link href="/forum" className={tabClass(!category && !lineups)}>
           Tout
         </Link>
         {CATEGORIES.map((c) => (
@@ -36,6 +36,9 @@ export default async function ForumPage({ searchParams }: { searchParams: Search
             {CATEGORY_LABELS[c]}
           </Link>
         ))}
+        <Link href="/forum?lineups=1" className={tabClass(lineups === '1')}>
+          Formations
+        </Link>
       </div>
 
       {author && (
@@ -54,7 +57,7 @@ export default async function ForumPage({ searchParams }: { searchParams: Search
         </div>
       )}
 
-      <Pagination page={page} totalPages={Math.ceil(total / POSTS_PER_PAGE)} params={{ category, author }} basePath="/forum" />
+      <Pagination page={page} totalPages={Math.ceil(total / POSTS_PER_PAGE)} params={{ category, author, lineups }} basePath="/forum" />
     </div>
   );
 }

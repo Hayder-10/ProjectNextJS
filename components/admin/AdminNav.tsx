@@ -6,11 +6,13 @@ export const ADMIN_SECTIONS: { href: string; label: string; icon: IconName }[] =
   { href: '/admin/users', label: 'Utilisateurs', icon: 'users' },
   { href: '/admin/products', label: 'Produits', icon: 'cart' },
   { href: '/admin/orders', label: 'Commandes', icon: 'package' },
+  { href: '/admin/shops', label: 'Boutiques', icon: 'bag' },
   { href: '/admin/pitches', label: 'Terrains', icon: 'goal' },
   { href: '/admin/bookings', label: 'Réservations', icon: 'calendar' },
   { href: '/admin/forum', label: 'Forum', icon: 'chat' },
   { href: '/admin/tournaments', label: 'Tournois', icon: 'trophy' },
   { href: '/admin/teams', label: 'Mes XI', icon: 'ball' },
+  { href: '/admin/player-teams', label: 'Équipes', icon: 'shirt' },
 ];
 
 /** Navigation commune à toutes les pages d'administration */

@@ -4,6 +4,7 @@ import './globals.css';
 import Providers from '@/components/layout/Providers';
 import Header from '@/components/layout/Header';
 import BottomNav from '@/components/layout/BottomNav';
+import SectionNav from '@/components/layout/SectionNav';
 import RegisterSW from '@/components/layout/RegisterSW';
 import OfflineBanner from '@/components/layout/OfflineBanner';
 
@@ -28,7 +29,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           <Header />
           <OfflineBanner />
-          <main className="animate-fade-up mx-auto max-w-5xl px-4 pb-24 pt-20 md:pb-12 md:pt-24">{children}</main>
+          <main className="animate-fade-up mx-auto max-w-5xl px-4 pb-24 pt-20 md:pb-12 md:pt-24">
+            <SectionNav />
+            {children}
+          </main>
           <BottomNav />
           <RegisterSW />
         </Providers>

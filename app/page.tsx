@@ -11,7 +11,15 @@ import TournamentCard from '@/components/tournaments/TournamentCard';
 import ProductImage from '@/components/shop/ProductImage';
 import GameRow from '@/components/football/GameRow';
 import Card from '@/components/ui/Card';
-import Icon from '@/components/ui/Icon';
+import Icon, { type IconName } from '@/components/ui/Icon';
+
+const SHORTCUTS: { href: string; label: string; icon: IconName }[] = [
+  { href: '/bookings', label: 'Mes réservations', icon: 'calendar' },
+  { href: '/shop/orders', label: 'Mes commandes', icon: 'package' },
+  { href: '/tournaments?tab=mine', label: 'Mes tournois', icon: 'trophy' },
+  { href: '/teams', label: 'Mes équipes', icon: 'users' },
+  { href: '/my-xi', label: 'Mon XI', icon: 'shirt' },
+];
 
 // Données personnalisées (session) : la page est rendue à chaque requête
 export const dynamic = 'force-dynamic';
@@ -39,6 +47,16 @@ export default async function HomePage() {
 
   return (
     <div className="space-y-12">
+      {user && (
+        <nav aria-label="Raccourcis" className="mb-6 flex gap-2 overflow-x-auto [scrollbar-width:none]">
+          {SHORTCUTS.map((s) => (
+            <Link key={s.href} href={s.href} className="chip inline-flex items-center gap-2">
+              <Icon name={s.icon} /> {s.label}
+            </Link>
+          ))}
+        </nav>
+      )}
+
       {/* Bandeau d'accueil : terrain de nuit, projecteurs et balayage lumineux */}
       <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-linear-to-br from-green-900/70 via-slate-900 to-slate-950 px-6 py-12 shadow-2xl shadow-green-950/50 sm:px-10 sm:py-16">
         <div className="pointer-events-none absolute -left-20 -top-24 h-72 w-72 rounded-full bg-green-500/30 blur-3xl" />

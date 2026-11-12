@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
+import { paymentFields } from './payment-fields';
 
 const orderSchema = new Schema(
   {
@@ -17,6 +18,14 @@ const orderSchema = new Schema(
     status: { type: String, enum: ['pending', 'confirmed', 'shipped', 'cancelled'], default: 'pending' },
     shippingAddress: { type: String, required: true },
     phone: { type: String, required: true },
+    ...paymentFields,
+    // Vendeur : un panier à plusieurs boutiques crée une commande par boutique. Sans boutique : FootHub.
+    shop: { type: Schema.Types.ObjectId, ref: 'Shop', index: true },
+    shopName: String,
+    commissionRate: Number,
+    commissionAmount: Number,
+    sellerAmount: Number,
+    settledAt: Date, // solde réglé avec le vendeur
   },
   { timestamps: true },
 );

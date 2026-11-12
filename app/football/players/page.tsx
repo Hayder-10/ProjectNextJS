@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { listAllClubs, PLAYERS_PER_PAGE, POSITION_LABELS, searchPlayersPage } from '@/lib/queries/football';
 import { formatEUR } from '@/lib/utils';
-import FootballTabs from '@/components/football/FootballTabs';
 import Avatar from '@/components/football/Avatar';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
@@ -23,7 +22,6 @@ export default async function PlayersPage({ searchParams }: { searchParams: Sear
 
   return (
     <div className="mx-auto max-w-3xl space-y-4">
-      <FootballTabs active="players" />
       <h1 className="page-title">Joueurs</h1>
 
       {/* Formulaire GET : les filtres sont dans l'URL */}

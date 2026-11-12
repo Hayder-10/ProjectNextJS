@@ -4,9 +4,12 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { connectDB } from '@/lib/db';
 import { requireAdmin, requireUser } from '@/lib/auth';
-import { BOOKING_DAYS_AHEAD, bookingSchema, MAX_FUTURE_BOOKINGS, pitchSchema } from '@/lib/validation/booking';
+import { BOOKING_DAYS_AHEAD, bookingSchema, MAX_FUTURE_BOOKINGS, paymentMethodSchema, pitchSchema } from '@/lib/validation/booking';
 import { firstError, objectId } from '@/lib/validation/common';
 import { isFutureSlot } from '@/lib/queries/booking';
+import { sendBookingConfirmation } from '@/lib/email';
+import { createCheckout, releaseExpiredPayments, settleBeforeCancel } from '@/lib/payments';
+import { isOnlinePaymentEnabled, toStripeAmount } from '@/lib/stripe';
 import { round3, todayString, toDateString, type ActionResult } from '@/lib/utils';
 import Pitch from '@/models/Pitch';
 import Booking from '@/models/Booking';
@@ -108,19 +111,53 @@ function isDuplicateError(err: unknown) {
 export async function createBooking(pitchId: string, _prev: ActionResult, formData: FormData): Promise<ActionResult> {
   const user = await requireUser();
   if (!objectId.safeParse(pitchId).success) return { ok: false, error: 'Terrain introuvable' };
+  const paymentMethod = paymentMethodSchema.safeParse(formData.get('paymentMethod'));
+  if (!paymentMethod.success) return { ok: false, error: firstError(paymentMethod.error) };
+  if (paymentMethod.data === 'online' && !isOnlinePaymentEnabled()) return { ok: false, error: 'Le paiement en ligne est indisponible' };
+
   await connectDB();
+  await releaseExpiredPayments();
 
   const check = await checkSlot(pitchId, formData, user.id);
   if ('error' in check) return { ok: false, error: check.error! };
 
+  let booking;
   try {
-    await Booking.create({ pitch: pitchId, user: user.id, date: check.date, startHour: check.startHour, price: check.pitch.pricePerHour });
+    booking = await Booking.create({
+      pitch: pitchId,
+      user: user.id,
+      date: check.date,
+      startHour: check.startHour,
+      price: check.pitch.pricePerHour,
+      paymentMethod: paymentMethod.data,
+    });
   } catch (err) {
     // L'index unique est la dernière protection contre la double réservation
     if (isDuplicateError(err)) return { ok: false, error: 'Ce créneau vient d\'être réservé' };
     throw err;
   }
 
+  if (paymentMethod.data === 'online') {
+    try {
+      const redirectUrl = await createCheckout({
+        kind: 'booking',
+        ids: [String(booking._id)],
+        userId: user.id,
+        email: user.email,
+        label: `${check.pitch.name} · ${check.date} · ${check.startHour}h-${check.startHour + 1}h`,
+        stripeAmount: toStripeAmount(check.pitch.pricePerHour),
+      });
+      revalidateBooking(pitchId);
+      return { ok: true, redirectUrl };
+    } catch (err) {
+      // Sans page de paiement, on libère tout de suite le créneau
+      console.error('[stripe] Échec de la création du paiement :', err);
+      await booking.deleteOne();
+      return { ok: false, error: 'Le paiement en ligne a échoué. Réessayez ou choisissez le paiement sur place.' };
+    }
+  }
+
+  await sendBookingConfirmation(booking);
   revalidateBooking(pitchId);
   redirect('/bookings');
 }
@@ -134,6 +171,7 @@ export async function moveBooking(bookingId: string, _prev: ActionResult, formDa
   if (!booking || booking.status !== 'active') return { ok: false, error: 'Réservation introuvable' };
   if (booking.user.toString() !== user.id && user.role !== 'admin') return { ok: false, error: 'Action non autorisée' };
   if (!isFutureSlot(booking.date, booking.startHour)) return { ok: false, error: 'Ce créneau a déjà commencé' };
+  if (booking.paymentMethod === 'online' && booking.paymentStatus === 'unpaid') return { ok: false, error: 'Payez la réservation avant de la déplacer' };
 
   const check = await checkSlot(booking.pitch.toString(), formData, booking.user.toString(), bookingId);
   if ('error' in check) return { ok: false, error: check.error! };
@@ -162,6 +200,9 @@ export async function cancelBooking(bookingId: string): Promise<ActionResult> {
   if (user.role !== 'admin' && !isFutureSlot(booking.date, booking.startHour)) {
     return { ok: false, error: 'Ce créneau a déjà commencé' };
   }
+
+  const paymentError = await settleBeforeCancel(booking);
+  if (paymentError) return { ok: false, error: paymentError };
 
   booking.status = 'cancelled';
   await booking.save();

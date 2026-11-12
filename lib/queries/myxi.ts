@@ -1,6 +1,7 @@
 import { isValidObjectId } from 'mongoose';
 import { connectDB } from '@/lib/db';
 import { toPlain } from '@/lib/utils';
+import type { Formation } from '@/lib/validation/myxi';
 import MyTeam from '@/models/MyTeam';
 import '@/models/Player';
 
@@ -20,7 +21,7 @@ export type MyTeamItem = {
   _id: string;
   owner: string;
   name: string;
-  formation: '4-3-3' | '4-4-2' | '3-5-2';
+  formation: Formation;
   isPublic: boolean;
   players: PickedPlayer[];
   updatedAt: string;

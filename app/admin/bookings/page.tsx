@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import { requireAdmin } from '@/lib/auth';
 import { isFutureSlot, listAllBookings } from '@/lib/queries/booking';
+import { releaseExpiredPayments } from '@/lib/payments';
 import { formatDate, formatTND } from '@/lib/utils';
+import PaymentBadge from '@/components/payment/PaymentBadge';
 import AdminNav from '@/components/admin/AdminNav';
 import Badge from '@/components/ui/Badge';
 import EmptyState from '@/components/ui/EmptyState';
@@ -19,6 +21,7 @@ const FILTERS = [
 export default async function AdminBookingsPage({ searchParams }: { searchParams: Promise<{ filter?: string }> }) {
   await requireAdmin();
   const { filter = 'upcoming' } = await searchParams;
+  await releaseExpiredPayments();
   const all = await listAllBookings();
 
   const bookings = all.filter((b) => {
@@ -56,6 +59,7 @@ export default async function AdminBookingsPage({ searchParams }: { searchParams
                 <th>Terrain</th>
                 <th>Utilisateur</th>
                 <th>Prix</th>
+                <th>Paiement</th>
                 <th>Statut</th>
                 <th></th>
               </tr>
@@ -70,6 +74,7 @@ export default async function AdminBookingsPage({ searchParams }: { searchParams
                     <td>{b.pitch?.name ?? '—'}</td>
                     <td>{typeof b.user === 'object' && b.user ? b.user.name : 'Compte supprimé'}</td>
                     <td className="whitespace-nowrap text-amber-400">{formatTND(b.price)}</td>
+                    <td><PaymentBadge method={b.paymentMethod} status={b.paymentStatus} cashLabel="Sur place" cancelled={b.status === 'cancelled'} /></td>
                     <td>
                       {b.status === 'cancelled' ? <Badge color="red">Annulée</Badge> : future ? <Badge color="green">À venir</Badge> : <Badge>Passée</Badge>}
                     </td>

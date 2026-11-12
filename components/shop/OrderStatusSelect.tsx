@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { adminSetOrderStatus } from '@/app/actions/shop';
+import { setOrderStatus } from '@/app/actions/shop';
 import { ORDER_STATUSES, ORDER_STATUS_LABELS } from '@/lib/validation/shop';
 
-/** Admin : change le statut d'une commande dès qu'on choisit une valeur */
+/** Admin ou vendeur : change le statut d'une commande dès qu'on choisit une valeur */
 export default function OrderStatusSelect({ orderId, status }: { orderId: string; status: string }) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState('');
@@ -16,13 +16,13 @@ export default function OrderStatusSelect({ orderId, status }: { orderId: string
         disabled={pending || status === 'cancelled'}
         onChange={(e) => {
           const value = e.target.value;
-          if (value === 'cancelled' && !confirm('Annuler cette commande ? Le stock sera remis.')) {
+          if (value === 'cancelled' && !confirm('Annuler cette commande ? Le stock sera remis et un paiement en ligne sera remboursé.')) {
             e.target.value = status;
             return;
           }
           startTransition(async () => {
             setError('');
-            const result = await adminSetOrderStatus(orderId, value);
+            const result = await setOrderStatus(orderId, value);
             if (result && !result.ok) setError(result.error);
           });
         }}

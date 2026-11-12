@@ -2,18 +2,24 @@ import Link from 'next/link';
 import { requireUser } from '@/lib/auth';
 import { isFutureSlot, listMyBookings, type BookingItem } from '@/lib/queries/booking';
 import { BOOKING_DAYS_AHEAD } from '@/lib/validation/booking';
+import { releaseExpiredPayments } from '@/lib/payments';
 import { formatDate, formatTND, toDateString, todayString } from '@/lib/utils';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import EmptyState from '@/components/ui/EmptyState';
 import ConfirmDeleteButton from '@/components/ui/ConfirmDeleteButton';
 import MoveBookingForm from '@/components/booking/MoveBookingForm';
+import PaymentBadge from '@/components/payment/PaymentBadge';
+import PaymentCancelledNotice from '@/components/payment/PaymentCancelledNotice';
+import PayNowButton from '@/components/payment/PayNowButton';
 import Icon from '@/components/ui/Icon';
 
 export const metadata = { title: 'Mes réservations' };
 
-export default async function BookingsPage() {
+export default async function BookingsPage({ searchParams }: { searchParams: Promise<{ payment?: string }> }) {
   const user = await requireUser();
+  const { payment } = await searchParams;
+  await releaseExpiredPayments();
   const bookings = await listMyBookings(user.id);
 
   const upcoming = bookings
@@ -27,15 +33,19 @@ export default async function BookingsPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-4">
       <h1 className="page-title">Mes réservations</h1>
+      {payment === 'cancelled' && bookings.some((b) => b.status === 'active' && b.paymentMethod === 'online' && b.paymentStatus === 'unpaid') && <PaymentCancelledNotice what="la réservation" />}
 
       <h2 className="section-title">À venir</h2>
       {upcoming.length === 0 ? (
         <EmptyState message="Aucune réservation à venir." actionLabel="Réserver un terrain" actionHref="/pitches" />
       ) : (
-        upcoming.map((b) => (
+        upcoming.map((b) => {
+          const awaitingPayment = b.paymentMethod === 'online' && b.paymentStatus === 'unpaid';
+          return (
           <BookingCard key={b._id} booking={b}>
             <div className="flex flex-wrap items-start gap-2">
-              {b.pitch && (
+              {awaitingPayment && <PayNowButton kind="booking" id={b._id} />}
+              {b.pitch && !awaitingPayment && (
                 <MoveBookingForm
                   bookingId={b._id}
                   date={b.date}
@@ -46,10 +56,11 @@ export default async function BookingsPage() {
                   maxDate={toDateString(maxDate)}
                 />
               )}
-              <ConfirmDeleteButton action="cancelBooking" args={[b._id]} label="Annuler" confirmMessage="Annuler cette réservation ?" />
+              <ConfirmDeleteButton action="cancelBooking" args={[b._id]} label="Annuler" confirmMessage={b.paymentStatus === 'paid' ? 'Annuler cette réservation ? Elle sera remboursée sur votre carte.' : 'Annuler cette réservation ?'} />
             </div>
           </BookingCard>
-        ))
+          );
+        })
       )}
 
       <h2 className="section-title">Passées et annulées</h2>
@@ -73,7 +84,10 @@ function BookingCard({ booking, children }: { booking: BookingItem; children?: R
         ) : (
           <span className="font-bold">Terrain supprimé</span>
         )}
-        {booking.status === 'cancelled' ? <Badge color="red">Annulée</Badge> : <Badge color="green">Active</Badge>}
+        <div className="flex flex-wrap justify-end gap-1">
+          <PaymentBadge method={booking.paymentMethod} status={booking.paymentStatus} cashLabel="Sur place" cancelled={booking.status === 'cancelled'} />
+          {booking.status === 'cancelled' ? <Badge color="red">Annulée</Badge> : <Badge color="green">Active</Badge>}
+        </div>
       </div>
       <p className="text-sm">
         <Icon name="calendar" /> {formatDate(booking.date)} · <Icon name="clock" /> {booking.startHour}h–{booking.startHour + 1}h ·{' '}

@@ -11,11 +11,13 @@ export const tournamentSchema = z.object({
   maxTeams: z.coerce.number().refine((n) => [4, 8, 16].includes(n), 'Le nombre d\'équipes doit être 4, 8 ou 16'),
 });
 
-export const teamSchema = z.object({
-  name: z.string().trim().min(2, "Le nom d'équipe doit contenir 2 à 40 caractères").max(40, "Le nom d'équipe doit contenir 2 à 40 caractères"),
+export const registerTeamSchema = z.object({
+  teamId: z.string().regex(/^[a-f0-9]{24}$/, 'Choisissez une équipe'),
 });
 
 export const scoreSchema = z.object({
   homeScore: z.coerce.number('Score invalide').int('Le score doit être un entier').min(0, 'Le score ne peut pas être négatif').max(99, 'Score trop grand'),
   awayScore: z.coerce.number('Score invalide').int('Le score doit être un entier').min(0, 'Le score ne peut pas être négatif').max(99, 'Score trop grand'),
+  homeYellow: z.coerce.number('Cartons invalides').int('Cartons invalides').min(0, 'Cartons invalides').max(30, 'Trop de cartons').default(0),
+  awayYellow: z.coerce.number('Cartons invalides').int('Cartons invalides').min(0, 'Cartons invalides').max(30, 'Trop de cartons').default(0),
 });

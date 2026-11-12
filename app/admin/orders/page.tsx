@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { requireAdmin } from '@/lib/auth';
 import { listAllOrders } from '@/lib/queries/shop';
+import { releaseExpiredPayments } from '@/lib/payments';
 import { ORDER_STATUSES, ORDER_STATUS_LABELS } from '@/lib/validation/shop';
 import AdminNav from '@/components/admin/AdminNav';
 import OrderCard from '@/components/shop/OrderCard';
@@ -12,6 +13,7 @@ export const metadata = { title: 'Admin · Commandes' };
 export default async function AdminOrdersPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
   await requireAdmin();
   const { status } = await searchParams;
+  await releaseExpiredPayments();
   const all = await listAllOrders();
   const orders = status ? all.filter((o) => o.status === status) : all;
 

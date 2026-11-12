@@ -37,12 +37,13 @@ export default function TournamentForm({ id, pitches, tournament, minDate }: Pro
             </option>
           ))}
         </Select>
-        <Select label="Nombre d'équipes max" name="maxTeams" defaultValue={tournament?.maxTeams ?? 8}>
-          <option value={4}>4</option>
-          <option value={8}>8</option>
-          <option value={16}>16</option>
+        <Select label="Nombre d'équipes" name="maxTeams" defaultValue={tournament?.maxTeams ?? 8} disabled={!!tournament && tournament.status !== 'open'}>
+          <option value={4}>4 (classement seul)</option>
+          <option value={8}>8 (toutes en éliminatoires)</option>
+          <option value={16}>16 (8 qualifiées)</option>
         </Select>
       </div>
+      {tournament && tournament.status !== 'open' && <input type="hidden" name="maxTeams" value={tournament.maxTeams} />}
       <FormError state={state} />
       <Button>{tournament ? 'Enregistrer' : 'Créer le tournoi'}</Button>
     </form>

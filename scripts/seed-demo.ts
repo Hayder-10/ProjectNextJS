@@ -15,6 +15,7 @@ import Tournament from '../models/Tournament';
 import Club from '../models/Club';
 import Player from '../models/Player';
 import MyTeam from '../models/MyTeam';
+import Team from '../models/Team';
 
 const DEMO_PASSWORD = 'Demo1234!';
 
@@ -104,6 +105,13 @@ function daysFromNow(days: number) {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
+/** Noms de joueurs fictifs, différents d'une équipe à l'autre */
+function demoPlayers(teamName: string) {
+  const first = ['Sami', 'Omar', 'Anis', 'Hedi', 'Walid', 'Nizar'];
+  const last = ['Ben Salah', 'Mansouri', 'Chebbi', 'Haddad', 'Khelifi', 'Riahi'];
+  return first.map((name, i) => `${name} ${last[(i + teamName.length) % last.length]}`);
+}
+
 function daysAgoDate(days: number, hour = 18) {
   const d = new Date();
   d.setDate(d.getDate() - days);
@@ -111,7 +119,7 @@ function daysAgoDate(days: number, hour = 18) {
   return d;
 }
 
-/** Championnat aller simple, comme startTournament */
+/** Championnat aller simple : à 4 équipes, c'est le format de startTournament (3 matchs chacune) */
 function roundRobin(teams: string[], scores: ([number, number] | null)[]) {
   const matches = [];
   let k = 0;
@@ -226,25 +234,30 @@ async function main() {
       organizer: userId(0), name: 'Coupe du Lac 5v5', city: 'Tunis', pitch: pitches[0]?._id,
       description: 'Tournoi amical en 5 contre 5. Inscription gratuite, coupe pour les vainqueurs !',
       startDate: daysFromNow(17), maxTeams: 8, status: 'open',
-      teams: [{ name: 'Les Aigles de Tunis', captain: userId(0) }, { name: 'Sahel Stars', captain: userId(1) }, { name: 'Sfax United', captain: userId(2) }],
+      teams: ['Les Aigles de Tunis', 'Sahel Stars', 'Sfax United'].map((name, i) => ({ name, captain: userId(i), players: demoPlayers(name) })),
       matches: [],
     },
     {
       organizer: userId(3), name: 'Trophée d\'automne', city: 'Tunis', pitch: pitches[1]?._id,
       description: 'Championnat sur trois samedis, chaque équipe rencontre toutes les autres.',
       startDate: daysFromNow(-4), maxTeams: 4, status: 'ongoing',
-      teams: ongoingTeams.map((name, i) => ({ name, captain: userId(i + 1) })),
+      teams: ongoingTeams.map((name, i) => ({ name, captain: userId(i + 1), players: demoPlayers(name) })),
       matches: roundRobin(ongoingTeams, [[2, 1], [0, 0], [3, 2], null, null, null]),
     },
     {
       organizer: userId(1), name: 'Sousse Summer Cup', city: 'Sousse', pitch: pitches[2]?._id,
       description: 'L\'édition d\'été, terminée en beauté sous le soleil du Sahel.',
       startDate: daysFromNow(-60), maxTeams: 4, status: 'finished',
-      teams: finishedTeams.map((name, i) => ({ name, captain: userId(i) })),
+      teams: finishedTeams.map((name, i) => ({ name, captain: userId(i), players: demoPlayers(name) })),
       matches: roundRobin(finishedTeams, [[3, 1], [2, 2], [4, 0], [1, 2], [2, 0], [1, 1]]),
     },
   ]);
   console.log('3 tournois créés');
+
+  // Une équipe par utilisateur de démo, à inscrire depuis la page d'un tournoi
+  const demoTeams = ['Les Aigles de Tunis', 'Sahel Stars', 'Sfax United', 'Cap Bon FC', 'Lac Strikers'];
+  await Team.create(demoTeams.map((name, i) => ({ owner: userId(i), name, players: demoPlayers(name) })));
+  console.log(`${demoTeams.length} équipes créées`);
 
   // 7. Un XI pour Yassine (seulement si les joueurs sont importés)
   const pick = async (position: string, count: number) =>

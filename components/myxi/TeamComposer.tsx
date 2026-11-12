@@ -2,10 +2,11 @@
 
 import { useActionState, useEffect, useState } from 'react';
 import { searchPlayers, createMyTeam, updateMyTeam } from '@/app/actions/myxi';
-import { FORMATIONS, type Formation, type Position } from '@/lib/validation/myxi';
+import { FORMATION_NAMES, FORMATIONS, formationLines, type Formation, type Position } from '@/lib/validation/myxi';
 import type { MyTeamItem, PickedPlayer } from '@/lib/queries/myxi';
 import { formatEUR } from '@/lib/utils';
 import Avatar from '@/components/football/Avatar';
+import PitchFrame from '@/components/myxi/PitchFrame';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import Button from '@/components/ui/Button';
@@ -72,24 +73,21 @@ export default function TeamComposer({ id, team }: Props) {
       <div className="grid gap-3 sm:grid-cols-2">
         <Input label="Nom du XI" name="name" defaultValue={team?.name} placeholder="Mon XI de tous les temps" required minLength={2} maxLength={80} />
         <Select label="Formation" name="formation" value={formation} onChange={(e) => changeFormation(e.target.value as Formation)}>
-          {Object.keys(FORMATIONS).map((f) => (
+          {FORMATION_NAMES.map((f) => (
             <option key={f}>{f}</option>
           ))}
         </Select>
       </div>
 
       {/* Terrain : attaquants en haut, gardien en bas */}
-      <div className="relative space-y-4 overflow-hidden rounded-2xl border-2 border-white/30 bg-green-700 bg-[repeating-linear-gradient(0deg,transparent,transparent_40px,rgba(255,255,255,0.05)_40px,rgba(255,255,255,0.05)_80px)] p-4 shadow-2xl shadow-green-900/50">
-        {/* Lignes du terrain : rond central et ligne médiane */}
-        <div className="pointer-events-none absolute inset-x-0 top-1/2 h-px bg-white/25" />
-        <div className="pointer-events-none absolute left-1/2 top-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/25" />
-        {[...POSITIONS].reverse().map((pos) => (
-          <div key={pos} className="relative flex justify-around gap-1">
-            {slots[pos].map((player, index) => (
-              <div key={index} className="flex w-16 flex-col items-center sm:w-20">
+      <PitchFrame>
+        {[...formationLines(formation)].reverse().map(({ position: pos, start, count }) => (
+          <div key={`${pos}-${start}`} className="relative flex justify-around gap-1">
+            {slots[pos].slice(start, start + count).map((player, i) => (
+              <div key={start + i} className="flex w-16 flex-col items-center sm:w-20">
                 <button
                   type="button"
-                  onClick={() => setPicking({ position: pos, index })}
+                  onClick={() => setPicking({ position: pos, index: start + i })}
                   className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-dashed border-white/70 bg-white/10 text-2xl text-white hover:bg-white/25"
                   aria-label={`Choisir un ${LABELS[pos]}`}
                 >
@@ -97,7 +95,7 @@ export default function TeamComposer({ id, team }: Props) {
                 </button>
                 <span className="mt-1 line-clamp-1 text-center text-xs font-semibold text-white">{player ? player.name.split(' ').slice(-1)[0] : pos}</span>
                 {player && (
-                  <button type="button" onClick={() => clearSlot(pos, index)} className="text-[10px] text-white/80 underline">
+                  <button type="button" onClick={() => clearSlot(pos, start + i)} className="text-[10px] text-white/80 underline">
                     retirer
                   </button>
                 )}
@@ -105,7 +103,7 @@ export default function TeamComposer({ id, team }: Props) {
             ))}
           </div>
         ))}
-      </div>
+      </PitchFrame>
 
       <div className="grid grid-cols-3 gap-2">
         {[

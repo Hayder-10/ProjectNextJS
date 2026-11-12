@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getCurrentUser } from '@/lib/auth';
 import { getPitch, getTakenHours } from '@/lib/queries/booking';
+import { releaseExpiredPayments } from '@/lib/payments';
+import { isOnlinePaymentEnabled } from '@/lib/stripe';
 import { BOOKING_DAYS_AHEAD } from '@/lib/validation/booking';
 import { formatTND, toDateString, todayString } from '@/lib/utils';
 import PitchImage from '@/components/booking/PitchImage';
@@ -29,6 +31,7 @@ export default async function PitchPage({ params, searchParams }: Props) {
 
   const days = bookableDays();
   const date = days.some((d) => d.value === dateParam) ? dateParam! : todayString();
+  await releaseExpiredPayments();
   const taken = await getTakenHours(pitch._id, date);
 
   // Heures passées d'aujourd'hui : désactivées
@@ -86,6 +89,7 @@ export default async function PitchPage({ params, searchParams }: Props) {
               taken={taken}
               pastLimit={pastLimit}
               price={pitch.pricePerHour}
+              onlinePaymentEnabled={isOnlinePaymentEnabled()}
             />
           ) : (
             <p className="text-slate-400">

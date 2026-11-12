@@ -24,3 +24,5 @@ export const bookingSchema = z.object({
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date invalide'),
   startHour: z.coerce.number().int('Heure invalide').min(0, 'Heure invalide').max(23, 'Heure invalide'),
 });
+
+export const paymentMethodSchema = z.enum(['cash', 'online'], 'Choisissez un mode de paiement');

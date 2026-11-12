@@ -7,13 +7,24 @@ import Icon from '@/components/ui/Icon';
 
 type Props = {
   tournamentId: string;
-  match: { _id: string; homeTeam: string; awayTeam: string; homeScore?: number; awayScore?: number };
+  match: {
+    _id: string;
+    homeTeam: string;
+    awayTeam: string;
+    homeScore?: number;
+    awayScore?: number;
+    homeYellow?: number;
+    awayYellow?: number;
+    stage?: 'group' | 'knockout';
+  };
 };
 
-/** Organisateur : saisie du score d'un match */
+/** Organisateur : saisie du score d'un match, et des cartons jaunes en phase de classement */
 export default function MatchScoreForm({ tournamentId, match }: Props) {
   const [state, formAction] = useActionState(setMatchScore.bind(null, tournamentId, match._id), null);
   const inputClass = 'h-11 w-14 rounded-xl border border-white/10 text-center font-bold';
+  const cardClass = 'h-9 w-12 rounded-lg border border-amber-400/30 bg-amber-400/5 text-center text-sm';
+  const isGroup = match.stage !== 'knockout';
 
   return (
     <form action={formAction} className="py-2">
@@ -27,6 +38,15 @@ export default function MatchScoreForm({ tournamentId, match }: Props) {
           <Icon name="check" />
         </Button>
       </div>
+      {isGroup && (
+        <div className="mt-2 flex items-center justify-center gap-2 text-xs text-slate-400">
+          <span>Cartons jaunes</span>
+          <input name="homeYellow" type="number" min={0} max={30} defaultValue={match.homeYellow ?? 0} className={cardClass} aria-label={`Cartons jaunes ${match.homeTeam}`} />
+          <span>-</span>
+          <input name="awayYellow" type="number" min={0} max={30} defaultValue={match.awayYellow ?? 0} className={cardClass} aria-label={`Cartons jaunes ${match.awayTeam}`} />
+        </div>
+      )}
+      {!isGroup && <p className="mt-1 text-center text-xs text-slate-400">Match à élimination : pas de nul, le score inclut les tirs au but.</p>}
       {state && !state.ok && <p className="mt-1 text-center text-sm text-red-400">{state.error}</p>}
     </form>
   );

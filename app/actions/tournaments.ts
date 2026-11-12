@@ -4,9 +4,22 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { connectDB } from '@/lib/db';
 import { requireAdmin, requireUser, type SessionUser } from '@/lib/auth';
-import { scoreSchema, teamSchema, tournamentSchema } from '@/lib/validation/tournaments';
+import { registerTeamSchema, scoreSchema, tournamentSchema } from '@/lib/validation/tournaments';
 import { firstError, objectId } from '@/lib/validation/common';
 import { todayString, type ActionResult } from '@/lib/utils';
+import {
+  firstKnockoutRound,
+  generateGroupMatches,
+  groupByRound,
+  groupRanking,
+  isKnockout,
+  isMatchLocked,
+  nextKnockoutRound,
+  nextStep,
+  qualifiedCount,
+  type TournamentMatch,
+} from '@/lib/tournament-format';
+import Team from '@/models/Team';
 import Tournament from '@/models/Tournament';
 
 type TeamDoc = { name: string; captain: { toString(): string } };
@@ -53,6 +66,9 @@ export async function updateTournament(id: string, _prev: ActionResult, formData
   if ('error' in result) return { ok: false, error: result.error! };
   const { tournament } = result;
 
+  if (tournament.status !== 'open' && parsed.data.maxTeams !== tournament.maxTeams) {
+    return { ok: false, error: "Le nombre d'équipes ne peut plus changer : le tournoi a commencé" };
+  }
   if (parsed.data.maxTeams < tournament.teams.length) {
     return { ok: false, error: `${tournament.teams.length} équipes sont déjà inscrites : impossible de descendre à ${parsed.data.maxTeams}` };
   }
@@ -83,11 +99,14 @@ export async function deleteTournament(id: string): Promise<ActionResult> {
 export async function registerTeam(id: string, _prev: ActionResult, formData: FormData): Promise<ActionResult> {
   const user = await requireUser();
   if (!objectId.safeParse(id).success) return { ok: false, error: 'Tournoi introuvable' };
-  const parsed = teamSchema.safeParse(Object.fromEntries(formData));
+  const parsed = registerTeamSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { ok: false, error: firstError(parsed.error) };
-  const name = parsed.data.name;
 
   await connectDB();
+  const team = await Team.findOne({ _id: parsed.data.teamId, owner: user.id });
+  if (!team) return { ok: false, error: 'Équipe introuvable' };
+  const name: string = team.name;
+
   const tournament = await Tournament.findById(id);
   if (!tournament) return { ok: false, error: 'Tournoi introuvable' };
   if (tournament.status !== 'open') return { ok: false, error: 'Les inscriptions sont fermées' };
@@ -99,7 +118,7 @@ export async function registerTeam(id: string, _prev: ActionResult, formData: Fo
     return { ok: false, error: 'Ce nom d\'équipe est déjà pris dans ce tournoi' };
   }
 
-  tournament.teams.push({ name, captain: user.id });
+  tournament.teams.push({ name, captain: user.id, players: team.players });
   await tournament.save();
   revalidateTournament(id);
   return { ok: true, message: 'Équipe inscrite !' };
@@ -124,7 +143,7 @@ export async function withdrawTeam(id: string, teamId: string): Promise<ActionRe
   return { ok: true };
 }
 
-/** Démarre le tournoi : championnat aller simple, chaque équipe rencontre chaque autre une fois */
+/** Démarre le tournoi : chaque équipe reçoit 3 adversaires tirés au sort */
 export async function startTournament(id: string): Promise<ActionResult> {
   const user = await requireUser();
   const result = await loadAsOrganizer(id, user);
@@ -132,17 +151,12 @@ export async function startTournament(id: string): Promise<ActionResult> {
   const { tournament } = result;
 
   if (tournament.status !== 'open') return { ok: false, error: 'Le tournoi a déjà commencé' };
-  if (tournament.teams.length < 4) return { ok: false, error: 'Il faut au moins 4 équipes pour démarrer' };
-
-  const teams: string[] = tournament.teams.map((t: TeamDoc) => t.name);
-  const matches = [];
-  for (let i = 0; i < teams.length; i++) {
-    for (let j = i + 1; j < teams.length; j++) {
-      matches.push({ homeTeam: teams[i], awayTeam: teams[j], round: 'Groupe' });
-    }
+  if (tournament.teams.length !== tournament.maxTeams) {
+    return { ok: false, error: `Il faut ${tournament.maxTeams} équipes pour démarrer (${tournament.teams.length} inscrites)` };
   }
 
-  tournament.set({ status: 'ongoing', matches });
+  const teams: string[] = tournament.teams.map((t: TeamDoc) => t.name);
+  tournament.set({ status: 'ongoing', matches: generateGroupMatches(teams) });
   await tournament.save();
   revalidateTournament(id);
   return { ok: true };
@@ -161,12 +175,42 @@ export async function setMatchScore(id: string, matchId: string, _prev: ActionRe
   if (tournament.status !== 'ongoing') return { ok: false, error: 'Les scores se saisissent pendant le tournoi' };
   const match = tournament.matches.id(matchId);
   if (!match) return { ok: false, error: 'Match introuvable' };
+  if (isMatchLocked(match, tournament.matches)) return { ok: false, error: 'Le tour suivant a commencé : ce score ne peut plus changer' };
+  if (isKnockout(match) && parsed.data.homeScore === parsed.data.awayScore) {
+    return { ok: false, error: 'Un match à élimination doit avoir un vainqueur : indiquez le score avec les tirs au but' };
+  }
 
-  match.homeScore = parsed.data.homeScore;
-  match.awayScore = parsed.data.awayScore;
+  match.set(parsed.data);
   await tournament.save();
   revalidateTournament(id);
   return { ok: true, message: 'Score enregistré' };
+}
+
+/** Crée le tour suivant : les éliminatoires à partir du classement, ou le tour des vainqueurs */
+export async function advanceTournament(id: string): Promise<ActionResult> {
+  const user = await requireUser();
+  const result = await loadAsOrganizer(id, user);
+  if ('error' in result) return { ok: false, error: result.error! };
+  const { tournament } = result;
+  if (tournament.status !== 'ongoing') return { ok: false, error: "Le tournoi n'est pas en cours" };
+
+  const matches = tournament.matches as TournamentMatch[];
+  const teams: string[] = tournament.teams.map((t: TeamDoc) => t.name);
+  const step = nextStep(matches, teams);
+
+  if (step.type === 'knockout') {
+    const ranking = groupRanking(matches, teams).slice(0, qualifiedCount(teams.length));
+    tournament.matches.push(...firstKnockoutRound(ranking));
+  } else if (step.type === 'next-round') {
+    const lastRound = groupByRound(matches.filter(isKnockout)).at(-1)!.matches;
+    tournament.matches.push(...nextKnockoutRound(lastRound));
+  } else {
+    return { ok: false, error: 'Saisissez tous les scores avant de passer au tour suivant' };
+  }
+
+  await tournament.save();
+  revalidateTournament(id);
+  return { ok: true };
 }
 
 export async function finishTournament(id: string): Promise<ActionResult> {
@@ -176,7 +220,11 @@ export async function finishTournament(id: string): Promise<ActionResult> {
   const { tournament } = result;
 
   if (tournament.status !== 'ongoing') return { ok: false, error: 'Seul un tournoi en cours peut être clôturé' };
-  tournament.status = 'finished';
+
+  const step = nextStep(tournament.matches as TournamentMatch[], tournament.teams.map((t: TeamDoc) => t.name));
+  if (step.type !== 'finish') return { ok: false, error: 'Tous les matchs doivent être joués avant de clôturer le tournoi' };
+
+  tournament.set({ status: 'finished', champion: step.champion });
   await tournament.save();
   revalidateTournament(id);
   return { ok: true };

@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import { listProducts } from '@/lib/queries/shop';
 import { PRODUCT_CATEGORIES, PRODUCT_CATEGORY_LABELS } from '@/lib/validation/shop';
-import { formatTND } from '@/lib/utils';
-import ProductImage from '@/components/shop/ProductImage';
+import ProductGrid from '@/components/shop/ProductGrid';
 import EmptyState from '@/components/ui/EmptyState';
 import Input from '@/components/ui/Input';
 import Icon from '@/components/ui/Icon';
@@ -20,8 +19,8 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="page-title">Boutique</h1>
-        <Link href="/shop/orders" className="link text-sm">
-          Mes commandes <Icon name="arrow-right" />
+        <Link href="/seller" className="link text-sm">
+          Vendre sur FootHub <Icon name="arrow-right" />
         </Link>
       </div>
 
@@ -47,23 +46,7 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
       {products.length === 0 ? (
         <EmptyState message="Aucun produit trouvé." />
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {products.map((p) => (
-            <Link key={p._id} href={`/shop/${p._id}`} className="overflow-hidden card p-0 card-hover">
-              <ProductImage product={p} className="h-44" />
-              <div className="space-y-1 p-4">
-                <p className="text-xs text-slate-400">{PRODUCT_CATEGORY_LABELS[p.category]}</p>
-                <h2 className="font-bold">{p.name}</h2>
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-amber-400">{formatTND(p.price)}</span>
-                  <span className={`text-xs ${p.stock > 0 ? 'text-slate-400' : 'font-semibold text-red-400'}`}>
-                    {p.stock > 0 ? `${p.stock} en stock` : 'Rupture'}
-                  </span>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+        <ProductGrid products={products} />
       )}
     </div>
   );

@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { listCities, listPitches } from '@/lib/queries/booking';
 import { PITCH_TYPES } from '@/lib/validation/booking';
 import { formatTND } from '@/lib/utils';
-import PlayTabs from '@/components/booking/PlayTabs';
 import PitchImage from '@/components/booking/PitchImage';
 import Select from '@/components/ui/Select';
 import EmptyState from '@/components/ui/EmptyState';
@@ -16,13 +15,7 @@ export default async function PitchesPage({ searchParams }: { searchParams: Prom
 
   return (
     <div className="space-y-4">
-      <PlayTabs active="pitches" />
-      <div className="flex items-center justify-between">
-        <h1 className="page-title">Terrains</h1>
-        <Link href="/bookings" className="link text-sm">
-          Mes réservations <Icon name="arrow-right" />
-        </Link>
-      </div>
+      <h1 className="page-title">Terrains</h1>
 
       <form className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         <Select name="city" defaultValue={city ?? ''}>

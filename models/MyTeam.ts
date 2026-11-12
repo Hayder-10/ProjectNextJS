@@ -1,10 +1,11 @@
 import mongoose, { Schema } from 'mongoose';
+import { FORMATION_NAMES } from '../lib/validation/myxi';
 
 const myTeamSchema = new Schema(
   {
     owner: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
     name: { type: String, required: true, maxlength: 80 },
-    formation: { type: String, enum: ['4-3-3', '4-4-2', '3-5-2'], required: true },
+    formation: { type: String, enum: FORMATION_NAMES, required: true },
     players: [{ type: Schema.Types.ObjectId, ref: 'Player' }], // exactement 11, vérifié dans l'action
     isPublic: { type: Boolean, default: true },
   },
