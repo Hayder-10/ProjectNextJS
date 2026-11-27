@@ -4,15 +4,25 @@ import LoginForm from '@/components/users/LoginForm';
 
 export const metadata = { title: 'Connexion' };
 
-export default async function LoginPage({ searchParams }: { searchParams: Promise<{ callbackUrl?: string; registered?: string }> }) {
-  const { callbackUrl, registered } = await searchParams;
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ callbackUrl?: string; registered?: string; reset?: string }>;
+}) {
+  const { callbackUrl, registered, reset } = await searchParams;
 
   return (
     <div className="mx-auto max-w-md space-y-4">
       <h1 className="page-title">Connexion</h1>
       {registered && <p className="rounded-xl bg-green-500/10 p-3 text-sm text-green-400">Compte créé ! Vous pouvez vous connecter.</p>}
+      {reset && <p className="rounded-xl bg-green-500/10 p-3 text-sm text-green-400">Mot de passe réinitialisé ! Vous pouvez vous connecter.</p>}
       <Card>
         <LoginForm callbackUrl={callbackUrl ?? '/'} />
+        <div className="mt-3 text-right text-sm">
+          <Link href="/forgot-password" className="link">
+            Mot de passe oublié ?
+          </Link>
+        </div>
       </Card>
       <p className="text-center text-sm text-slate-400">
         Pas encore de compte ?{' '}

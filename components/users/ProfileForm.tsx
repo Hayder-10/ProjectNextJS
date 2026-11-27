@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useEffect, useRef } from 'react';
+import { useActionState, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { updateProfile } from '@/app/actions/users';
 import type { UserItem } from '@/lib/queries/users';
@@ -14,21 +14,23 @@ type ClubGroup = { competition: string; clubs: { _id: string; name: string }[] }
 export default function ProfileForm({ user, clubGroups }: { user: UserItem; clubGroups: ClubGroup[] }) {
   const [state, formAction] = useActionState(updateProfile, null);
   const { update } = useSession();
-  const formRef = useRef<HTMLFormElement>(null);
+  const [name, setName] = useState(user.name);
+  const [city, setCity] = useState(user.city ?? '');
+  const [avatarUrl, setAvatarUrl] = useState(user.avatarUrl ?? '');
+  const [favoriteClub, setFavoriteClub] = useState(user.favoriteClub ?? '');
 
   // Met à jour le nom affiché dans le header après l'enregistrement
   useEffect(() => {
-    const name = (formRef.current?.elements.namedItem('name') as HTMLInputElement | null)?.value;
     if (state?.ok && name) update({ name });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
   return (
-    <form ref={formRef} action={formAction} className="space-y-4">
-      <Input label="Nom" name="name" defaultValue={user.name} required minLength={2} maxLength={50} />
-      <Input label="Ville" name="city" defaultValue={user.city ?? ''} />
-      <Input label="URL de l'avatar" name="avatarUrl" type="url" defaultValue={user.avatarUrl ?? ''} placeholder="https://…" />
-      <Select label="Club favori" name="favoriteClub" defaultValue={user.favoriteClub ?? ''}>
+    <form action={formAction} className="space-y-4">
+      <Input label="Nom" name="name" value={name} onChange={(e) => setName(e.target.value)} required minLength={2} maxLength={50} />
+      <Input label="Ville" name="city" value={city} onChange={(e) => setCity(e.target.value)} />
+      <Input label="URL de l'avatar" name="avatarUrl" type="url" value={avatarUrl} onChange={(e) => setAvatarUrl(e.target.value)} placeholder="https://…" />
+      <Select label="Club favori" name="favoriteClub" value={favoriteClub} onChange={(e) => setFavoriteClub(e.target.value)}>
         <option value="">— Aucun —</option>
         {clubGroups.map((g) => (
           <optgroup key={g.competition} label={g.competition}>

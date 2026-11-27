@@ -170,3 +170,24 @@ export async function sendShopDecision(shop: { _id: unknown }, decision: keyof t
   );
   await sendEmail({ to: found.owner.email, subject: `FootHub · ${title}`, ...content });
 }
+
+export async function sendPasswordResetOtp(email: string, name: string, otp: string) {
+  if (!process.env.SMTP_HOST) {
+    console.log(`[email] SMTP non configuré, code OTP pour ${email} : ${otp}`);
+    return;
+  }
+
+  const title = 'Réinitialisation de votre mot de passe';
+  const content = layout(
+    title,
+    [
+      `Bonjour ${name},`,
+      `Voici votre code de vérification (OTP) : ${otp}`,
+      'Ce code est valable pendant 10 minutes.',
+      "Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet e-mail.",
+    ],
+    '/forgot-password',
+    'Réinitialiser mon mot de passe',
+  );
+  await sendEmail({ to: email, subject: `FootHub · ${title}`, ...content });
+}

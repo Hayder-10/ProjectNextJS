@@ -27,3 +27,16 @@ export const passwordSchema = z
     confirm: z.string(),
   })
   .refine((d) => d.password === d.confirm, { message: 'Les mots de passe ne correspondent pas', path: ['confirm'] });
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().trim().toLowerCase().email('E-mail invalide'),
+});
+
+export const resetPasswordSchema = z
+  .object({
+    email: z.string().trim().toLowerCase().email('E-mail invalide'),
+    otp: z.string().trim().regex(/^\d{6}$/, 'Le code OTP doit contenir 6 chiffres'),
+    password,
+    confirm: z.string(),
+  })
+  .refine((d) => d.password === d.confirm, { message: 'Les mots de passe ne correspondent pas', path: ['confirm'] });
